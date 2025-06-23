@@ -164,6 +164,7 @@ class GameEngine:
                   target_organ: Optional[str] = None) -> Dict[str, Any]:
         """Play a card with the specified targets."""
         # Validate the play
+        logger.info(f"Player {player.name} playing {card.name}")
         can_play, reason = self.can_play_card(
             player, card, target_player, target_organ)
         if not can_play:

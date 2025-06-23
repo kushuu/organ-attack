@@ -112,8 +112,8 @@ class CardWidget(ttk.Frame):
                 child.bind("<Leave>", self._on_hover_leave)
 
         # Tooltip on hover (for all cards)
-        self.bind("<Enter>", self._show_tooltip)
-        self.bind("<Leave>", self._hide_tooltip)
+        # self.bind("<Enter>", self._show_tooltip)
+        # self.bind("<Leave>", self._hide_tooltip)
         self.tooltip = None
 
     def _on_click(self, event):

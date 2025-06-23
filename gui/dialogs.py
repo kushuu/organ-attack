@@ -109,6 +109,8 @@ class NewGameDialog:
         if len(self.player_entries) > 2:
             entry = self.player_entries.pop()
             entry.destroy()
+        else:
+            messagebox.showwarning("Warning", "At least 2 players required!")
 
     def _ok_clicked(self):
         """Handle OK button click."""
