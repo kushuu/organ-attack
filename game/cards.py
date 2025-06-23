@@ -5,15 +5,18 @@ Handles card loading, validation, and effect execution.
 
 import json
 import logging
-from typing import List, Dict, Optional, Any
 from pathlib import Path
-from game.models import Card, CardType, CardTarget, CardConditions, CardEffect, OrganCard
+from typing import Any, Dict, List, Optional
+
+from game.models import (Card, CardConditions, CardEffect, CardTarget,
+                         CardType, OrganCard)
 
 logger = logging.getLogger(__name__)
 
+
 class CardManager:
     """Manages all cards in the game including loading and validation."""
-    
+
     def __init__(self, cards_file: str = "data/cards.json"):
         self.cards_file = cards_file
         self.all_cards: Dict[str, Card] = {}
@@ -35,7 +38,8 @@ class CardManager:
                 cards_data = json.load(f)
 
             self._parse_cards(cards_data)
-            logger.info(f"Loaded {len(self.all_cards)} cards from {self.cards_file}")
+            logger.info(
+                f"Loaded {len(self.all_cards)} cards from {self.cards_file}")
 
         except Exception as e:
             logger.error(f"Error loading cards: {e}")
@@ -47,13 +51,14 @@ class CardManager:
             try:
                 card = self._create_card_from_data(card_data)
                 self.all_cards[card.id] = card
-                
+
                 # Categorize by type
                 card_type = CardType(card.type.value)
                 self.cards_by_type[card_type].append(card)
-                
+
             except Exception as e:
-                logger.error(f"Error parsing card {card_data.get('id', 'unknown')}: {e}")
+                logger.error(
+                    f"Error parsing card {card_data.get('id', 'unknown')}: {e}")
 
     def _create_card_from_data(self, data: Dict[str, Any]) -> Card:
         """Create a Card object from JSON data."""
@@ -74,11 +79,16 @@ class CardManager:
         if 'conditions' in data and data['conditions']:
             cond_data = data['conditions']
             conditions = CardConditions(
-                organ_must_be_present=cond_data.get('organ_must_be_present', False),
-                organ_must_not_be_protected=cond_data.get('organ_must_not_be_protected', False),
-                target_organ_must_be_present=cond_data.get('target_organ_must_be_present', False),
-                player_must_have_available_slot=cond_data.get('player_must_have_available_slot', False),
-                must_be_played_in_response_or_attack_phase=cond_data.get('must_be_played_in_response_or_attack_phase', False)
+                organ_must_be_present=cond_data.get(
+                    'organ_must_be_present', False),
+                organ_must_not_be_protected=cond_data.get(
+                    'organ_must_not_be_protected', False),
+                target_organ_must_be_present=cond_data.get(
+                    'target_organ_must_be_present', False),
+                player_must_have_available_slot=cond_data.get(
+                    'player_must_have_available_slot', False),
+                must_be_played_in_response_or_attack_phase=cond_data.get(
+                    'must_be_played_in_response_or_attack_phase', False)
             )
 
         # Parse effects
@@ -97,7 +107,7 @@ class CardManager:
 
         # Create card
         card_type = CardType(data['type'])
-        
+
         if card_type == CardType.ORGAN:
             # Special handling for organ cards
             return OrganCard(
@@ -129,7 +139,7 @@ class CardManager:
     def _create_default_cards(self):
         """Create a basic set of cards if JSON loading fails."""
         logger.warning("Creating default card set")
-        
+
         # Create some basic attack cards
         basic_attacks = [
             {
@@ -141,7 +151,7 @@ class CardManager:
                 'effects': [{'action': 'remove_organ', 'target_organ': 'Heart'}]
             },
             {
-                'id': 'attack_002', 
+                'id': 'attack_002',
                 'name': 'Brain Freeze',
                 'type': 'Attack',
                 'description': 'Attack the brain organ.',
@@ -149,7 +159,7 @@ class CardManager:
                 'effects': [{'action': 'remove_organ', 'target_organ': 'Brain'}]
             }
         ]
-        
+
         # Create some basic defense cards
         basic_defenses = [
             {
@@ -160,7 +170,7 @@ class CardManager:
                 'effects': [{'action': 'block_attack'}]
             }
         ]
-        
+
         # Parse default cards
         default_data = {'cards': basic_attacks + basic_defenses}
         self._parse_cards(default_data)
@@ -187,31 +197,32 @@ class CardManager:
             # Basic validation
             if not card:
                 return False, "Invalid card"
-            
+
             if not card.conditions:
                 return True, "Valid"
-            
+
             # Check specific conditions
             conditions = card.conditions
-            
+
             # Add more validation logic based on game state
             # This is a simplified version
             return True, "Valid"
-            
+
         except Exception as e:
             logger.error(f"Error validating card play: {e}")
             return False, f"Validation error: {e}"
 
+
 class CardEffectProcessor:
     """Processes card effects during gameplay."""
-    
+
     def __init__(self, game_engine):
         self.game_engine = game_engine
-    
+
     def process_card_effects(self, card: Card, player, target_player=None, target_organ=None):
         """Process all effects of a played card."""
         results = []
-        
+
         for effect in card.effects:
             try:
                 result = self._process_single_effect(
@@ -221,13 +232,13 @@ class CardEffectProcessor:
             except Exception as e:
                 logger.error(f"Error processing effect {effect.action}: {e}")
                 results.append({'success': False, 'error': str(e)})
-        
+
         return results
-    
+
     def _process_single_effect(self, effect: CardEffect, card: Card, player, target_player=None, target_organ=None):
         """Process a single card effect."""
         action = effect.action
-        
+
         if action == 'remove_organ':
             return self._remove_organ_effect(effect, player, target_player, target_organ)
         elif action == 'protect_organ':
@@ -243,16 +254,16 @@ class CardEffectProcessor:
         else:
             logger.warning(f"Unknown effect action: {action}")
             return {'success': False, 'error': f'Unknown action: {action}'}
-    
+
     def _remove_organ_effect(self, effect: CardEffect, player, target_player, target_organ):
         """Process organ removal effect."""
         if not target_player or not target_organ:
             return {'success': False, 'error': 'Missing target for organ removal'}
-        
+
         # Check if organ is protected
         if target_player.is_organ_protected(target_organ):
             return {'success': False, 'blocked': True, 'reason': 'Organ is protected'}
-        
+
         success = target_player.remove_organ(target_organ)
         return {
             'success': success,
@@ -260,23 +271,24 @@ class CardEffectProcessor:
             'target': target_organ,
             'player': target_player.name
         }
-    
+
     def _protect_organ_effect(self, effect: CardEffect, player, target_player, target_organ):
         """Process organ protection effect."""
         target = target_player or player
         organ_type = target_organ or effect.target_organ
-        
+
         if not organ_type:
             return {'success': False, 'error': 'No target organ specified'}
-        
-        success = target.protect_organ(organ_type, f"Protected by {player.name}")
+
+        success = target.protect_organ(
+            organ_type, f"Protected by {player.name}")
         return {
             'success': success,
             'action': 'protect_organ',
             'target': organ_type,
             'player': target.name
         }
-    
+
     def _block_attack_effect(self, effect: CardEffect, player):
         """Process attack blocking effect."""
         # This would interact with the game engine's attack resolution
@@ -285,34 +297,34 @@ class CardEffectProcessor:
             'action': 'block_attack',
             'player': player.name
         }
-    
+
     def _steal_organ_effect(self, effect: CardEffect, player, target_player, target_organ):
         """Process organ stealing effect."""
         if not target_player or not target_organ:
             return {'success': False, 'error': 'Missing target for organ steal'}
-        
+
         # Implementation would depend on game rules for organ stealing
         return {
             'success': False,
             'error': 'Organ stealing not fully implemented'
         }
-    
+
     def _draw_cards_effect(self, effect: CardEffect, player):
         """Process card drawing effect."""
         draw_count = effect.value or 1
-        
+
         for _ in range(draw_count):
             card = self.game_engine.draw_card_for_player(player)
             if not card:
                 break
-        
+
         return {
             'success': True,
             'action': 'draw_cards',
             'count': draw_count,
             'player': player.name
         }
-    
+
     def _skip_turn_effect(self, effect: CardEffect, target_player):
         """Process turn skipping effect."""
         if target_player:

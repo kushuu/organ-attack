@@ -5,8 +5,8 @@ Defines the fundamental data structures using dataclasses and enums.
 
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import List, Dict, Optional, Any, Set
-from abc import ABC, abstractmethod
+from typing import Any, Dict, List, Optional
+
 
 class CardType(Enum):
     """Enumeration of all card types in the game."""
@@ -15,6 +15,7 @@ class CardType(Enum):
     DEFENSE = "Defense"
     ACTION = "Action"
     WILDCARD = "Wildcard"
+
 
 class GameState(Enum):
     """Game state machine states."""
@@ -26,10 +27,12 @@ class GameState(Enum):
     NEXT_TURN = auto()
     GAME_OVER = auto()
 
+
 class PlayerStatus(Enum):
     """Player status enumeration."""
     ACTIVE = "active"
     ELIMINATED = "eliminated"
+
 
 class OrganType(Enum):
     """Types of organs in the game."""
@@ -41,6 +44,18 @@ class OrganType(Enum):
     LIVER = "Liver"
     STOMACH = "Stomach"
     INTESTINES = "Intestines"
+    BLADDER = "Bladder"
+    BOWELS = "Bowels"
+    PANCREAS = "Pancreas"
+    SPLEEN = "Spleen"
+    APPENDIX = "Appendix"
+    TONGUE = "Tongue"
+    TONSILS = "Tonsils"
+    THYROID = "Thyroid"
+    TEETH = "Teeth"
+    GALLBLADDER = "Gallbladder"
+    ESOPHAGUS = "Esophagus"
+
 
 @dataclass
 class CardTarget:
@@ -51,6 +66,7 @@ class CardTarget:
     organ_scope: str = "Single"  # Single, Multiple, All
     flexible: bool = False
 
+
 @dataclass
 class CardConditions:
     """Defines conditions that must be met for a card to be played."""
@@ -59,6 +75,7 @@ class CardConditions:
     target_organ_must_be_present: bool = False
     player_must_have_available_slot: bool = False
     must_be_played_in_response_or_attack_phase: bool = False
+
 
 @dataclass
 class CardEffect:
@@ -70,6 +87,7 @@ class CardEffect:
     mimic_type: Optional[str] = None
     from_target: Optional[str] = None
     to_target: Optional[str] = None
+
 
 @dataclass
 class Card:
@@ -85,6 +103,7 @@ class Card:
     is_vital: bool = False
     can_be_protected: bool = True
 
+
 @dataclass
 class OrganCard(Card):
     """Represents an organ card with protection status."""
@@ -96,6 +115,7 @@ class OrganCard(Card):
         """Set card type to Organ after initialization."""
         self.type = CardType.ORGAN
 
+
 @dataclass
 class GameEvent:
     """Represents a game event for logging and state management."""
@@ -106,6 +126,7 @@ class GameEvent:
     target_organ: Optional[str] = None
     success: bool = True
     details: Dict[str, Any] = field(default_factory=dict)
+
 
 @dataclass
 class ActiveEffect:

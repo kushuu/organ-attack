@@ -3,12 +3,15 @@ Player management for the Organ Attack card game.
 Handles player state, organs, hand management, and actions.
 """
 
-from dataclasses import dataclass, field
-from typing import List, Dict, Optional, Set
-from game.models import Card, OrganCard, PlayerStatus, OrganType, CardType
 import logging
+import random
+from dataclasses import dataclass, field
+from typing import Dict, List, Optional, Tuple
+
+from game.models import Card, CardType, OrganCard, OrganType, PlayerStatus
 
 logger = logging.getLogger(__name__)
+
 
 @dataclass
 class Player:
@@ -21,6 +24,17 @@ class Player:
     cards_played_this_turn: int = 0
     can_draw_extra: bool = False
     skip_next_turn: bool = False
+    organs_list: Tuple[OrganType] = (
+        OrganType.HEART, OrganType.BRAIN, OrganType.LUNGS, OrganType.KIDNEYS,
+        OrganType.EYES, OrganType.LIVER, OrganType.STOMACH, OrganType.INTESTINES,
+        OrganType.BLADDER, OrganType.BOWELS, OrganType.PANCREAS, OrganType.SPLEEN,
+        OrganType.APPENDIX, OrganType.TONGUE, OrganType.TONSILS, OrganType.THYROID,
+        OrganType.TEETH, OrganType.GALLBLADDER, OrganType.ESOPHAGUS
+    )
+    vital_organs_list: Tuple[OrganType] = (
+        OrganType.HEART, OrganType.BRAIN, OrganType.LUNGS,
+        OrganType.KIDNEYS, OrganType.EYES, OrganType.LIVER
+    )
 
     def __post_init__(self):
         """Initialize player with starting organs."""
@@ -29,19 +43,21 @@ class Player:
 
     def _initialize_organs(self):
         """Initialize player with the standard set of organ cards."""
-        starting_organs = [
-            OrganType.HEART, OrganType.BRAIN, OrganType.LUNGS,
-            OrganType.KIDNEYS, OrganType.EYES, OrganType.LIVER
-        ]
-        
-        for organ_type in starting_organs:
+
+        organs = random.sample(self.organs_list, 6)
+        logger.info(f"{self.name} has the following organs: {organs}")
+        # remove the selected organs from the list
+        self.organs_list = [
+            organ for organ in self.organs_list if organ not in organs]
+
+        for organ_type in organs:
             organ_card = OrganCard(
                 id=f"organ_{organ_type.value.lower()}",
                 name=organ_type.value,
                 type=CardType.ORGAN,
                 description=f"Essential {organ_type.value.lower()} organ.",
                 organ_type=organ_type.value,
-                is_vital=organ_type in [OrganType.HEART, OrganType.BRAIN],
+                is_vital=organ_type in self.vital_organs_list,
                 can_be_protected=True
             )
             self.organs[organ_type.value] = organ_card
@@ -49,19 +65,19 @@ class Player:
     def add_card_to_hand(self, card: Card):
         """Add a card to the player's hand."""
         self.hand.append(card)
-        logger.debug(f"{self.name} drew {card.name}")
+        logger.info(f"{self.name} drew {card.name}")
 
     def remove_card_from_hand(self, card: Card) -> bool:
         """Remove a card from the player's hand."""
         if card in self.hand:
             self.hand.remove(card)
-            logger.debug(f"{self.name} played {card.name}")
+            logger.info(f"{self.name} played {card.name}")
             return True
         return False
 
     def has_organ(self, organ_type: str) -> bool:
         """Check if player has a specific organ that's not removed."""
-        return (organ_type in self.organs and 
+        return (organ_type in self.organs and
                 not self.organs[organ_type].is_removed)
 
     def get_organ(self, organ_type: str) -> Optional[OrganCard]:
@@ -86,7 +102,8 @@ class Player:
             if organ.can_be_protected:
                 organ.is_protected = True
                 organ.protection_source = protection_source
-                logger.info(f"{self.name}'s {organ_type} is now protected by {protection_source}")
+                logger.info(
+                    f"{self.name}'s {organ_type} is now protected by {protection_source}")
                 return True
         return False
 
@@ -97,7 +114,8 @@ class Player:
             if organ.is_protected:
                 organ.is_protected = False
                 organ.protection_source = None
-                logger.info(f"{self.name}'s {organ_type} protection was removed")
+                logger.info(
+                    f"{self.name}'s {organ_type} protection was removed")
                 return True
         return False
 
@@ -113,7 +131,7 @@ class Player:
 
     def get_protected_organs(self) -> List[OrganCard]:
         """Get all organs that are protected."""
-        return [organ for organ in self.organs.values() 
+        return [organ for organ in self.organs.values()
                 if not organ.is_removed and organ.is_protected]
 
     def _check_elimination(self):
@@ -139,12 +157,12 @@ class Player:
         """Check if a card can be played based on game rules."""
         if card not in self.hand:
             return False
-        
+
         # Basic validation - more complex validation happens in game engine
         if card.type == CardType.DEFENSE:
             # Defense cards are usually played in response to attacks
             return True
-        
+
         return True
 
     def get_playable_cards(self) -> List[Card]:
@@ -165,7 +183,7 @@ class Player:
         """Get a summary of player status for display."""
         available_organs = self.get_available_organs()
         protected_organs = self.get_protected_organs()
-        
+
         return {
             'name': self.name,
             'status': self.status.value,
