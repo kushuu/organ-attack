@@ -8,7 +8,8 @@ import random
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
 
-from game.models import Card, CardType, OrganCard, OrganType, PlayerStatus
+from game.models import (Card, CardType, OrganCard, OrganType, PlayerStatus,
+                         VitalOrganType)
 
 logger = logging.getLogger(__name__)
 
@@ -24,16 +25,11 @@ class Player:
     cards_played_this_turn: int = 0
     can_draw_extra: bool = False
     skip_next_turn: bool = False
-    organs_list: Tuple[OrganType] = (
-        OrganType.HEART, OrganType.BRAIN, OrganType.LUNGS, OrganType.KIDNEYS,
-        OrganType.EYES, OrganType.LIVER, OrganType.STOMACH, OrganType.INTESTINES,
-        OrganType.BLADDER, OrganType.BOWELS, OrganType.PANCREAS, OrganType.SPLEEN,
-        OrganType.APPENDIX, OrganType.TONGUE, OrganType.TONSILS, OrganType.THYROID,
-        OrganType.TEETH, OrganType.GALLBLADDER, OrganType.ESOPHAGUS
+    organs_list: Tuple[OrganType] = tuple(
+        organ for organ in OrganType
     )
-    vital_organs_list: Tuple[OrganType] = (
-        OrganType.HEART, OrganType.BRAIN, OrganType.LUNGS,
-        OrganType.KIDNEYS, OrganType.EYES, OrganType.LIVER
+    vital_organs_list: Tuple[OrganType] = tuple(
+        organ for organ in VitalOrganType
     )
 
     def __post_init__(self):

@@ -57,6 +57,16 @@ class OrganType(Enum):
     ESOPHAGUS = "Esophagus"
 
 
+class VitalOrganType(Enum):
+    """Vital organs that are essential for the game."""
+    HEART = OrganType.HEART
+    BRAIN = OrganType.BRAIN
+    LUNGS = OrganType.LUNGS
+    KIDNEYS = OrganType.KIDNEYS
+    EYES = OrganType.EYES
+    LIVER = OrganType.LIVER
+
+
 @dataclass
 class CardTarget:
     """Defines targeting information for a card."""
