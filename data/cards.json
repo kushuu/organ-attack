@@ -1,0 +1,819 @@
+{
+    "cards": [
+        {
+            "id": "attack_001",
+            "name": "Heart Attack",
+            "type": "Attack",
+            "description": "A sudden cardiac event that destroys the heart instantly.",
+            "target": {
+                "organ_type": "Heart",
+                "scope": "Single",
+                "player_scope": "Other"
+            },
+            "conditions": {
+                "target_organ_must_be_present": true,
+                "organ_must_not_be_protected": false
+            },
+            "effects": [
+                {
+                    "action": "remove_organ",
+                    "target_organ": "Heart"
+                }
+            ]
+        },
+        {
+            "id": "attack_002",
+            "name": "Brain Freeze",
+            "type": "Attack",
+            "description": "An intense headache that destroys brain function.",
+            "target": {
+                "organ_type": "Brain",
+                "scope": "Single",
+                "player_scope": "Other"
+            },
+            "conditions": {
+                "target_organ_must_be_present": true
+            },
+            "effects": [
+                {
+                    "action": "remove_organ",
+                    "target_organ": "Brain"
+                }
+            ]
+        },
+        {
+            "id": "attack_003",
+            "name": "Collapsed Lung",
+            "type": "Attack",
+            "description": "Punctures the lungs, making breathing impossible.",
+            "target": {
+                "organ_type": "Lungs",
+                "scope": "Single",
+                "player_scope": "Other"
+            },
+            "conditions": {
+                "target_organ_must_be_present": true
+            },
+            "effects": [
+                {
+                    "action": "remove_organ",
+                    "target_organ": "Lungs"
+                }
+            ]
+        },
+        {
+            "id": "attack_004",
+            "name": "Kidney Stone",
+            "type": "Attack",
+            "description": "Painful stones that destroy kidney function.",
+            "target": {
+                "organ_type": "Kidneys",
+                "scope": "Single",
+                "player_scope": "Other"
+            },
+            "conditions": {
+                "target_organ_must_be_present": true
+            },
+            "effects": [
+                {
+                    "action": "remove_organ",
+                    "target_organ": "Kidneys"
+                }
+            ]
+        },
+        {
+            "id": "attack_005",
+            "name": "Laser Eye Surgery Gone Wrong",
+            "type": "Attack",
+            "description": "A botched surgery that destroys vision permanently.",
+            "target": {
+                "organ_type": "Eyes",
+                "scope": "Single",
+                "player_scope": "Other"
+            },
+            "conditions": {
+                "target_organ_must_be_present": true
+            },
+            "effects": [
+                {
+                    "action": "remove_organ",
+                    "target_organ": "Eyes"
+                }
+            ]
+        },
+        {
+            "id": "attack_006",
+            "name": "Liver Failure",
+            "type": "Attack",
+            "description": "Complete liver breakdown from toxin overload.",
+            "target": {
+                "organ_type": "Liver",
+                "scope": "Single",
+                "player_scope": "Other"
+            },
+            "conditions": {
+                "target_organ_must_be_present": true
+            },
+            "effects": [
+                {
+                    "action": "remove_organ",
+                    "target_organ": "Liver"
+                }
+            ]
+        },
+        {
+            "id": "attack_007",
+            "name": "Food Poisoning",
+            "type": "Attack",
+            "description": "Severe gastric distress that destroys the stomach.",
+            "target": {
+                "organ_type": "Stomach",
+                "scope": "Single",
+                "player_scope": "Other"
+            },
+            "conditions": {
+                "target_organ_must_be_present": true
+            },
+            "effects": [
+                {
+                    "action": "remove_organ",
+                    "target_organ": "Stomach"
+                }
+            ]
+        },
+        {
+            "id": "attack_008",
+            "name": "Appendicitis",
+            "type": "Attack",
+            "description": "Inflamed appendix that requires immediate removal.",
+            "target": {
+                "organ_type": "Intestines",
+                "scope": "Single",
+                "player_scope": "Other"
+            },
+            "conditions": {
+                "target_organ_must_be_present": true
+            },
+            "effects": [
+                {
+                    "action": "remove_organ",
+                    "target_organ": "Intestines"
+                }
+            ]
+        },
+        {
+            "id": "attack_009",
+            "name": "Cardiac Arrest",
+            "type": "Attack",
+            "description": "Instant heart stoppage unless protected by medical equipment.",
+            "target": {
+                "organ_type": "Heart",
+                "scope": "Single",
+                "player_scope": "Other"
+            },
+            "conditions": {
+                "target_organ_must_be_present": true,
+                "organ_must_not_be_protected": true
+            },
+            "effects": [
+                {
+                    "action": "remove_organ",
+                    "target_organ": "Heart"
+                }
+            ]
+        },
+        {
+            "id": "attack_010",
+            "name": "Stroke",
+            "type": "Attack",
+            "description": "Blood clot in the brain causing permanent damage.",
+            "target": {
+                "organ_type": "Brain",
+                "scope": "Single",
+                "player_scope": "Other"
+            },
+            "conditions": {
+                "target_organ_must_be_present": true
+            },
+            "effects": [
+                {
+                    "action": "remove_organ",
+                    "target_organ": "Brain"
+                }
+            ]
+        },
+        {
+            "id": "attack_011",
+            "name": "Bladder Infection",
+            "type": "Attack",
+            "description": "A severe infection that destroys the bladder.",
+            "target": {
+                "organ_type": "Bladder",
+                "scope": "Single",
+                "player_scope": "Other"
+            },
+            "conditions": {
+                "target_organ_must_be_present": true
+            },
+            "effects": [
+                {
+                    "action": "remove_organ",
+                    "target_organ": "Bladder"
+                }
+            ]
+        },
+        {
+            "id": "attack_012",
+            "name": "Bowel Obstruction",
+            "type": "Attack",
+            "description": "A blockage that destroys the bowels.",
+            "target": {
+                "organ_type": "Bowels",
+                "scope": "Single",
+                "player_scope": "Other"
+            },
+            "conditions": {
+                "target_organ_must_be_present": true
+            },
+            "effects": [
+                {
+                    "action": "remove_organ",
+                    "target_organ": "Bowels"
+                }
+            ]
+        },
+        {
+            "id": "attack_013",
+            "name": "Pancreatitis",
+            "type": "Attack",
+            "description": "Inflammation that destroys the pancreas.",
+            "target": {
+                "organ_type": "Pancreas",
+                "scope": "Single",
+                "player_scope": "Other"
+            },
+            "conditions": {
+                "target_organ_must_be_present": true
+            },
+            "effects": [
+                {
+                    "action": "remove_organ",
+                    "target_organ": "Pancreas"
+                }
+            ]
+        },
+        {
+            "id": "attack_014",
+            "name": "Ruptured Spleen",
+            "type": "Attack",
+            "description": "A traumatic injury that destroys the spleen.",
+            "target": {
+                "organ_type": "Spleen",
+                "scope": "Single",
+                "player_scope": "Other"
+            },
+            "conditions": {
+                "target_organ_must_be_present": true
+            },
+            "effects": [
+                {
+                    "action": "remove_organ",
+                    "target_organ": "Spleen"
+                }
+            ]
+        },
+        {
+            "id": "attack_015",
+            "name": "Appendix Rupture",
+            "type": "Attack",
+            "description": "A burst appendix that must be removed.",
+            "target": {
+                "organ_type": "Appendix",
+                "scope": "Single",
+                "player_scope": "Other"
+            },
+            "conditions": {
+                "target_organ_must_be_present": true
+            },
+            "effects": [
+                {
+                    "action": "remove_organ",
+                    "target_organ": "Appendix"
+                }
+            ]
+        },
+        {
+            "id": "attack_016",
+            "name": "Tongue Necrosis",
+            "type": "Attack",
+            "description": "A rare disease that destroys the tongue.",
+            "target": {
+                "organ_type": "Tongue",
+                "scope": "Single",
+                "player_scope": "Other"
+            },
+            "conditions": {
+                "target_organ_must_be_present": true
+            },
+            "effects": [
+                {
+                    "action": "remove_organ",
+                    "target_organ": "Tongue"
+                }
+            ]
+        },
+        {
+            "id": "attack_017",
+            "name": "Tonsillitis",
+            "type": "Attack",
+            "description": "Severe infection that destroys the tonsils.",
+            "target": {
+                "organ_type": "Tonsils",
+                "scope": "Single",
+                "player_scope": "Other"
+            },
+            "conditions": {
+                "target_organ_must_be_present": true
+            },
+            "effects": [
+                {
+                    "action": "remove_organ",
+                    "target_organ": "Tonsils"
+                }
+            ]
+        },
+        {
+            "id": "attack_018",
+            "name": "Thyroid Storm",
+            "type": "Attack",
+            "description": "A sudden attack that destroys the thyroid.",
+            "target": {
+                "organ_type": "Thyroid",
+                "scope": "Single",
+                "player_scope": "Other"
+            },
+            "conditions": {
+                "target_organ_must_be_present": true
+            },
+            "effects": [
+                {
+                    "action": "remove_organ",
+                    "target_organ": "Thyroid"
+                }
+            ]
+        },
+        {
+            "id": "attack_019",
+            "name": "Tooth Decay",
+            "type": "Attack",
+            "description": "Rampant decay that destroys the teeth.",
+            "target": {
+                "organ_type": "Teeth",
+                "scope": "Single",
+                "player_scope": "Other"
+            },
+            "conditions": {
+                "target_organ_must_be_present": true
+            },
+            "effects": [
+                {
+                    "action": "remove_organ",
+                    "target_organ": "Teeth"
+                }
+            ]
+        },
+        {
+            "id": "attack_020",
+            "name": "Gallbladder Stones",
+            "type": "Attack",
+            "description": "Painful stones that destroy the gallbladder.",
+            "target": {
+                "organ_type": "Gallbladder",
+                "scope": "Single",
+                "player_scope": "Other"
+            },
+            "conditions": {
+                "target_organ_must_be_present": true
+            },
+            "effects": [
+                {
+                    "action": "remove_organ",
+                    "target_organ": "Gallbladder"
+                }
+            ]
+        },
+        {
+            "id": "attack_021",
+            "name": "Esophageal Perforation",
+            "type": "Attack",
+            "description": "A tear that destroys the esophagus.",
+            "target": {
+                "organ_type": "Esophagus",
+                "scope": "Single",
+                "player_scope": "Other"
+            },
+            "conditions": {
+                "target_organ_must_be_present": true
+            },
+            "effects": [
+                {
+                    "action": "remove_organ",
+                    "target_organ": "Esophagus"
+                }
+            ]
+        },
+        {
+            "id": "defense_001",
+            "name": "Medical Kit",
+            "type": "Defense",
+            "description": "Emergency medical supplies that can block any single attack.",
+            "target": {},
+            "conditions": {},
+            "effects": [
+                {
+                    "action": "block_attack",
+                    "duration": "instant"
+                }
+            ]
+        },
+        {
+            "id": "defense_002",
+            "name": "Vaccination",
+            "type": "Defense",
+            "description": "Permanent protection for one organ against disease-based attacks.",
+            "target": {
+                "organ_type": "Any",
+                "scope": "Single",
+                "player_scope": "Self"
+            },
+            "conditions": {},
+            "effects": [
+                {
+                    "action": "protect_organ",
+                    "duration": "permanent"
+                }
+            ]
+        },
+        {
+            "id": "defense_003",
+            "name": "Surgery",
+            "type": "Defense",
+            "description": "Emergency surgery that can save any organ under attack.",
+            "target": {},
+            "conditions": {},
+            "effects": [
+                {
+                    "action": "block_attack",
+                    "duration": "instant"
+                }
+            ]
+        },
+        {
+            "id": "defense_004",
+            "name": "Rubber Gloves",
+            "type": "Defense",
+            "description": "Protective gear that blocks contamination-based attacks.",
+            "target": {},
+            "conditions": {},
+            "effects": [
+                {
+                    "action": "block_attack",
+                    "duration": "instant"
+                }
+            ]
+        },
+        {
+            "id": "defense_005",
+            "name": "Hand Sanitizer",
+            "type": "Defense",
+            "description": "Kills germs and prevents infection-based organ damage.",
+            "target": {},
+            "conditions": {},
+            "effects": [
+                {
+                    "action": "block_attack",
+                    "duration": "instant"
+                }
+            ]
+        },
+        {
+            "id": "defense_006",
+            "name": "Hazmat Suit",
+            "type": "Defense",
+            "description": "Full body protection against environmental attacks.",
+            "target": {},
+            "conditions": {},
+            "effects": [
+                {
+                    "action": "block_attack",
+                    "duration": "instant"
+                }
+            ]
+        },
+        {
+            "id": "action_001",
+            "name": "Organ Transplant",
+            "type": "Action",
+            "description": "Replace one of your removed organs with a healthy one from another player.",
+            "target": {
+                "player_scope": "Other",
+                "organ_scope": "Single"
+            },
+            "conditions": {
+                "target_organ_must_be_present": true,
+                "player_must_have_available_slot": true
+            },
+            "effects": [
+                {
+                    "action": "steal_organ",
+                    "from": "other_player",
+                    "to": "self"
+                }
+            ]
+        },
+        {
+            "id": "action_002",
+            "name": "Medical Research",
+            "type": "Action",
+            "description": "Draw 2 additional cards to find the treatment you need.",
+            "target": {},
+            "conditions": {},
+            "effects": [
+                {
+                    "action": "draw_cards",
+                    "value": 2
+                }
+            ]
+        },
+        {
+            "id": "action_003",
+            "name": "Caffeine Rush",
+            "type": "Action",
+            "description": "Take an extra turn after this one.",
+            "target": {},
+            "conditions": {},
+            "effects": [
+                {
+                    "action": "extra_turn",
+                    "duration": "instant"
+                }
+            ]
+        },
+        {
+            "id": "action_004",
+            "name": "Anesthesia",
+            "type": "Action",
+            "description": "Target player skips their next turn.",
+            "target": {
+                "player_scope": "Other"
+            },
+            "conditions": {},
+            "effects": [
+                {
+                    "action": "skip_turn",
+                    "duration": "instant"
+                }
+            ]
+        },
+        {
+            "id": "action_005",
+            "name": "Body Snatch",
+            "type": "Action",
+            "description": "Steal a healthy organ from another player.",
+            "target": {
+                "player_scope": "Other",
+                "organ_scope": "Single"
+            },
+            "conditions": {
+                "target_organ_must_be_present": true
+            },
+            "effects": [
+                {
+                    "action": "steal_organ",
+                    "from": "other_player",
+                    "to": "self"
+                }
+            ]
+        },
+        {
+            "id": "action_006",
+            "name": "Medical Conference",
+            "type": "Action",
+            "description": "All players draw one card.",
+            "target": {
+                "player_scope": "All"
+            },
+            "conditions": {},
+            "effects": [
+                {
+                    "action": "draw_cards",
+                    "value": 1
+                }
+            ]
+        },
+        {
+            "id": "wildcard_001",
+            "name": "Medical Mystery",
+            "type": "Wildcard",
+            "description": "Play this as any attack or defense card. Choose when played.",
+            "target": {
+                "flexible": true
+            },
+            "conditions": {
+                "must_be_played_in_response_or_attack_phase": true
+            },
+            "effects": [
+                {
+                    "action": "mimic_card",
+                    "mimic_type": "Attack|Defense"
+                }
+            ]
+        },
+        {
+            "id": "wildcard_002",
+            "name": "Experimental Treatment",
+            "type": "Wildcard",
+            "description": "Unpredictable medical procedure. Flip a coin - heads saves organ, tails destroys it.",
+            "target": {
+                "organ_type": "Any",
+                "player_scope": "Any"
+            },
+            "conditions": {},
+            "effects": [
+                {
+                    "action": "test_luck",
+                    "value": 50
+                }
+            ]
+        },
+        {
+            "id": "wildcard_003",
+            "name": "Pandemic",
+            "type": "Wildcard",
+            "description": "Global health crisis! All players must discard half their hand (rounded down).",
+            "target": {
+                "player_scope": "All"
+            },
+            "conditions": {},
+            "effects": [
+                {
+                    "action": "mass_discard",
+                    "value": 50
+                }
+            ]
+        },
+        {
+            "id": "organ_heart",
+            "name": "Heart",
+            "type": "Organ",
+            "description": "Vital organ. Cannot survive without it.",
+            "organ_type": "Heart",
+            "is_vital": true,
+            "can_be_protected": true
+        },
+        {
+            "id": "organ_brain",
+            "name": "Brain",
+            "type": "Organ",
+            "description": "Controls all body functions. Essential for life.",
+            "organ_type": "Brain",
+            "is_vital": true,
+            "can_be_protected": true
+        },
+        {
+            "id": "organ_lungs",
+            "name": "Lungs",
+            "type": "Organ",
+            "description": "Breathing apparatus. Required for oxygen intake.",
+            "organ_type": "Lungs",
+            "is_vital": false,
+            "can_be_protected": true
+        },
+        {
+            "id": "organ_kidneys",
+            "name": "Kidneys",
+            "type": "Organ",
+            "description": "Filters toxins from blood. Important for health.",
+            "organ_type": "Kidneys",
+            "is_vital": false,
+            "can_be_protected": true
+        },
+        {
+            "id": "organ_eyes",
+            "name": "Eyes",
+            "type": "Organ",
+            "description": "Vision organs. Life is harder without them.",
+            "organ_type": "Eyes",
+            "is_vital": false,
+            "can_be_protected": true
+        },
+        {
+            "id": "organ_liver",
+            "name": "Liver",
+            "type": "Organ",
+            "description": "Detoxifies the body. Critical for survival.",
+            "organ_type": "Liver",
+            "is_vital": false,
+            "can_be_protected": true
+        },
+        {
+            "id": "organ_bladder",
+            "name": "Bladder",
+            "type": "Organ",
+            "description": "Stores urine. Essential for waste removal.",
+            "organ_type": "Bladder",
+            "is_vital": false,
+            "can_be_protected": true
+        },
+        {
+            "id": "organ_bowels",
+            "name": "Bowels",
+            "type": "Organ",
+            "description": "Digestive tract. Required for nutrient absorption.",
+            "organ_type": "Bowels",
+            "is_vital": false,
+            "can_be_protected": true
+        },
+        {
+            "id": "organ_pancreas",
+            "name": "Pancreas",
+            "type": "Organ",
+            "description": "Produces enzymes and hormones. Critical for digestion.",
+            "organ_type": "Pancreas",
+            "is_vital": false,
+            "can_be_protected": true
+        },
+        {
+            "id": "organ_spleen",
+            "name": "Spleen",
+            "type": "Organ",
+            "description": "Filters blood and produces immune cells. Essential for immunity.",
+            "organ_type": "Spleen",
+            "is_vital": false,
+            "can_be_protected": true
+        },
+        {
+            "id": "organ_appendix",
+            "name": "Appendix",
+            "type": "Organ",
+            "description": "Appendicular organ. Essential for digestion.",
+            "organ_type": "Appendix",
+            "is_vital": false,
+            "can_be_protected": true
+        },
+        {
+            "id": "organ_tongue",
+            "name": "Tongue",
+            "type": "Organ",
+            "description": "Muscular organ. Essential for speech and swallowing.",
+            "organ_type": "Tongue",
+            "is_vital": false,
+            "can_be_protected": true
+        },
+        {
+            "id": "organ_tonsils",
+            "name": "Tonsils",
+            "type": "Organ",
+            "description": "Lymphoid tissue. Essential for immune response.",
+            "organ_type": "Tonsils",
+            "is_vital": false,
+            "can_be_protected": true
+        },
+        {
+            "id": "organ_thyroid",
+            "name": "Thyroid",
+            "type": "Organ",
+            "description": "Endocrine gland. Controls metabolism.",
+            "organ_type": "Thyroid",
+            "is_vital": false,
+            "can_be_protected": true
+        },
+        {
+            "id": "organ_teeth",
+            "name": "Teeth",
+            "type": "Organ",
+            "description": "Bony structures. Essential for eating and speaking.",
+            "organ_type": "Teeth",
+            "is_vital": false,
+            "can_be_protected": true
+        },
+        {
+            "id": "organ_gallbladder",
+            "name": "Gallbladder",
+            "type": "Organ",
+            "description": "Stores bile. Essential for digestion.",
+            "organ_type": "Gallbladder",
+            "is_vital": false,
+            "can_be_protected": true
+        },
+        {
+            "id": "organ_esophagus",
+            "name": "Esophagus",
+            "type": "Organ",
+            "description": "Muscular tube. Essential for swallowing.",
+            "organ_type": "Esophagus",
+            "is_vital": false,
+            "can_be_protected": true
+        }
+    ]
+}
