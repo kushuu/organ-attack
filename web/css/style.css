@@ -386,8 +386,10 @@ input[type="text"]::placeholder { color: var(--text-muted); }
 
 /* Organ chip */
 .organ-chip {
-    width: 80px;
-    padding: 8px;
+    width: auto;
+    min-width: 70px;
+    max-width: 120px;
+    padding: 8px 10px;
     border-radius: var(--radius-sm);
     text-align: center;
     font-size: 0.75rem;
@@ -395,6 +397,9 @@ input[type="text"]::placeholder { color: var(--text-muted); }
     border: 2px solid;
     position: relative;
     transition: all var(--transition);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .organ-chip.healthy {
     background: rgba(46, 204, 113, 0.15);
@@ -619,9 +624,6 @@ input[type="text"]::placeholder { color: var(--text-muted); }
 
 /* ============ RESPONSIVE / MOBILE ============ */
 
-/* Prevent body scroll when game is active */
-body.game-active { overflow: hidden; }
-
 /* Small phones (portrait) */
 @media (max-width: 480px) {
     :root {
@@ -634,7 +636,7 @@ body.game-active { overflow: hidden; }
     .logo h1 { font-size: 1.8rem; letter-spacing: 2px; }
     .logo .tagline { font-size: 0.8rem; letter-spacing: 1px; }
     .home-form { margin-top: 2rem; gap: 0.75rem; }
-    input[type="text"] { padding: 12px 14px; font-size: 16px; /* prevents iOS zoom */ }
+    input[type="text"] { padding: 12px 14px; font-size: 16px; }
     .home-buttons { flex-direction: column; gap: 0.75rem; }
     .home-buttons .btn { width: 100%; }
     .join-form { flex-direction: column; gap: 0.5rem; }
@@ -648,69 +650,99 @@ body.game-active { overflow: hidden; }
     .lobby-actions { flex-direction: column; gap: 0.75rem; }
     .lobby-actions .btn { width: 100%; }
 
-    /* ===== GAME SCREEN - MOBILE ===== */
-    .game-layout { padding: 0.25rem 0.5rem; }
+    /* ===== GAME SCREEN - MOBILE (Vertical Scroll) ===== */
+    .game-layout {
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        padding: 0.5rem;
+    }
 
-    /* Header: compact single row */
+    #view-game.active {
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+        overflow-y: auto;
+    }
+
+    /* Header */
     .game-header {
-        flex-wrap: nowrap;
+        flex-wrap: wrap;
         gap: 0.3rem;
         padding: 0.3rem 0;
     }
-    .game-info { gap: 0.3rem; }
+    .game-info { gap: 0.3rem; flex-wrap: wrap; }
     .turn-badge { padding: 3px 8px; font-size: 0.7rem; }
     .phase-badge { padding: 3px 8px; font-size: 0.65rem; }
     .deck-info { gap: 0.5rem; font-size: 0.7rem; }
     #btn-leave-game { padding: 4px 10px; font-size: 0.75rem; min-height: 32px; }
 
-    /* Opponents: compact horizontal scroll */
+    /* Opponents: vertical stack */
     .opponents-area {
+        flex-direction: column;
         gap: 0.5rem;
-        padding: 0.4rem 0;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
+        padding: 0.5rem 0;
+        overflow-x: hidden;
+        overflow-y: visible;
     }
-    .opponents-area::-webkit-scrollbar { display: none; }
     .opponent-panel {
-        min-width: 200px;
+        min-width: 100%;
+        width: 100%;
         padding: 0.6rem;
-        scroll-snap-align: start;
     }
     .opponent-name { font-size: 0.8rem; margin-bottom: 0.4rem; }
-    .opponent-organs { grid-template-columns: repeat(3, 1fr); gap: 0.25rem; }
-
-    /* My area: fill remaining space */
-    .my-area {
+    .opponent-organs {
+        display: flex;
+        flex-wrap: wrap;
         gap: 0.3rem;
-        padding: 0.2rem 0;
+    }
+
+    /* My area */
+    .my-area {
+        gap: 0.5rem;
+        padding: 0.3rem 0;
+        overflow: visible;
+        flex: none;
     }
     .my-organs-section h3,
-    .my-hand-section h3 { font-size: 0.7rem; margin-bottom: 0.25rem; letter-spacing: 0.5px; }
+    .my-hand-section h3 { font-size: 0.7rem; margin-bottom: 0.3rem; letter-spacing: 0.5px; }
 
-    /* Organ chips */
+    /* Organ chips: dynamic width */
+    .my-organs-section .organs-grid,
+    .opponent-organs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.3rem;
+    }
     .organ-chip {
         width: auto;
-        min-width: 50px;
-        padding: 4px;
+        min-width: 0;
+        max-width: none;
+        padding: 5px 8px;
         font-size: 0.6rem;
     }
     .organ-chip.vital::after { font-size: 0.5rem; top: -3px; right: -2px; }
     .organ-chip .protection-label { font-size: 0.45rem; }
 
-    /* Cards: horizontal scroll in remaining space */
-    .hand-grid {
-        gap: 0.5rem;
-        padding: 0.15rem 0 0.4rem;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
+    /* My hand: vertical scroll with wrap */
+    .my-hand-section {
+        flex: none;
+        overflow: visible;
     }
-    .hand-grid::-webkit-scrollbar { display: none; }
+    .hand-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        overflow: visible;
+        padding: 0.2rem 0 0.5rem;
+        justify-content: center;
+    }
     .card {
-        width: 105px;
-        min-height: 140px;
-        scroll-snap-align: start;
+        width: calc(50% - 0.25rem);
+        min-height: 150px;
     }
     .card:active:not(.disabled) { transform: scale(0.96); }
     .card:hover { transform: none; }
@@ -720,17 +752,22 @@ body.game-active { overflow: hidden; }
     .card-desc { font-size: 0.6rem; line-height: 1.25; }
     .card-target { font-size: 0.5rem; margin-top: 3px; }
 
-    /* Controls: compact full-width */
+    /* Controls: fixed at bottom */
     .game-controls {
         gap: 0.4rem;
-        padding: 0.4rem 0;
-        flex-wrap: wrap;
+        padding: 0.5rem 0;
+        flex-wrap: nowrap;
+        position: sticky;
+        bottom: 0;
+        background: var(--bg-primary);
+        border-top: 1px solid var(--border);
+        z-index: 10;
     }
     .game-controls .btn {
-        flex: 1 1 calc(33% - 0.3rem);
-        padding: 10px 8px;
-        font-size: 0.8rem;
-        min-height: 44px;
+        flex: 1;
+        padding: 12px 8px;
+        font-size: 0.85rem;
+        min-height: 48px;
     }
 
     /* Game message */
@@ -742,6 +779,8 @@ body.game-active { overflow: hidden; }
         width: 95%;
         max-width: none;
         margin: 0 0.5rem;
+        max-height: 90vh;
+        overflow-y: auto;
     }
     .modal-content h3 { font-size: 1.1rem; }
     .modal-content p { font-size: 0.8rem; margin-bottom: 1rem; }
@@ -758,7 +797,7 @@ body.game-active { overflow: hidden; }
 
     /* Toast */
     .toast {
-        bottom: 1rem;
+        bottom: 5rem;
         left: 1rem;
         right: 1rem;
         transform: none;
@@ -772,8 +811,7 @@ body.game-active { overflow: hidden; }
 @media (min-width: 481px) and (max-width: 768px) {
     .game-layout { padding: 0.35rem 0.75rem; }
     .card { width: 125px; min-height: 160px; }
-    .organ-chip { width: 65px; }
-    .opponent-panel { min-width: 230px; }
+    .opponent-panel { min-width: 100%; }
     .game-controls .btn { min-height: 44px; }
 }
 
