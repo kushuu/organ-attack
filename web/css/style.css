@@ -1,0 +1,857 @@
+/* ============================================
+   ORGAN ATTACK - Web Frontend Styles
+   ============================================ */
+
+:root {
+    --bg-primary: #0f0f1a;
+    --bg-secondary: #1a1a2e;
+    --bg-card: #16213e;
+    --bg-surface: #1e2a47;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0b0;
+    --text-muted: #606070;
+    --accent: #e74c3c;
+    --accent-glow: rgba(231, 76, 60, 0.3);
+    --green: #2ecc71;
+    --green-glow: rgba(46, 204, 113, 0.3);
+    --blue: #3498db;
+    --blue-glow: rgba(52, 152, 219, 0.3);
+    --purple: #9b59b6;
+    --purple-glow: rgba(155, 89, 182, 0.3);
+    --yellow: #f39c12;
+    --yellow-glow: rgba(243, 156, 18, 0.3);
+    --orange: #e67e22;
+    --border: #2a2a4a;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 4px 20px rgba(0,0,0,0.4);
+    --transition: 0.2s ease;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Views */
+.view { display: none; min-height: 100vh; }
+.view.active { display: flex; }
+
+/* ============ HOME SCREEN ============ */
+.home-container {
+    margin: auto;
+    text-align: center;
+    padding: 2rem;
+    max-width: 480px;
+    width: 100%;
+}
+
+.logo h1 {
+    font-size: 3rem;
+    font-weight: 900;
+    letter-spacing: 4px;
+    color: var(--text-primary);
+}
+.logo h1 span { color: var(--accent); }
+.logo .tagline {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin-top: 0.5rem;
+    letter-spacing: 2px;
+}
+
+.home-form {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 1rem;
+    outline: none;
+    transition: border var(--transition);
+}
+input[type="text"]:focus { border-color: var(--accent); }
+input[type="text"]::placeholder { color: var(--text-muted); }
+
+.home-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.join-form {
+    display: flex;
+    gap: 0.5rem;
+    animation: slideDown 0.3s ease;
+}
+.join-form input { flex: 1; }
+
+/* Buttons */
+.btn {
+    padding: 14px 28px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition);
+    letter-spacing: 1px;
+    min-height: 48px; /* minimum touch target */
+    touch-action: manipulation;
+}
+.btn:active { transform: scale(0.97); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover:not(:disabled) { background: #c0392b; box-shadow: 0 0 20px var(--accent-glow); }
+
+.btn-secondary { background: var(--bg-surface); color: var(--text-primary); border: 2px solid var(--border); }
+.btn-secondary:hover:not(:disabled) { border-color: var(--blue); color: var(--blue); }
+
+.btn-accent { background: var(--blue); color: #fff; }
+.btn-accent:hover:not(:disabled) { background: #2980b9; box-shadow: 0 0 20px var(--blue-glow); }
+
+.btn-warning { background: var(--yellow); color: #000; font-weight: 700; }
+.btn-warning:hover:not(:disabled) { background: var(--orange); }
+.btn-warning:disabled { opacity: 0.4; }
+
+.btn-danger { background: transparent; color: var(--accent); border: 2px solid var(--accent); }
+.btn-danger:hover:not(:disabled) { background: var(--accent); color: #fff; }
+
+.btn-small { padding: 8px 16px; font-size: 0.85rem; }
+
+.btn-icon {
+    background: none;
+    border: 2px solid var(--border);
+    color: var(--text-secondary);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: all var(--transition);
+}
+.btn-icon:hover { border-color: var(--blue); color: var(--blue); }
+
+.status-bar {
+    margin-top: 1.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    min-height: 1.5rem;
+}
+
+/* ============ LOBBY SCREEN ============ */
+.lobby-container {
+    margin: auto;
+    text-align: center;
+    padding: 2rem;
+    max-width: 500px;
+    width: 100%;
+}
+
+.lobby-container h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+}
+
+.lobby-code-box {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.lobby-code-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.lobby-code {
+    font-size: 2.5rem;
+    font-weight: 900;
+    letter-spacing: 8px;
+    color: var(--accent);
+    font-family: 'Courier New', monospace;
+}
+
+.lobby-players {
+    text-align: left;
+    margin-bottom: 2rem;
+}
+.lobby-players h3 {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+#player-list {
+    list-style: none;
+}
+#player-list li {
+    padding: 12px 16px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+#player-list li .host-badge {
+    background: var(--yellow);
+    color: #000;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+}
+
+.lobby-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+/* ============ GAME SCREEN ============ */
+.game-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 0.5rem 1rem;
+}
+
+.game-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.game-info { display: flex; gap: 0.75rem; align-items: center; }
+
+.turn-badge {
+    background: var(--bg-surface);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: 1px solid var(--border);
+}
+
+.phase-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+.phase-badge.play { background: var(--green); color: #000; }
+.phase-badge.done { background: var(--yellow); color: #000; }
+
+.deck-info {
+    display: flex;
+    gap: 1rem;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+/* Opponents */
+.opponents-area {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0;
+    overflow-x: auto;
+    flex-shrink: 0;
+}
+
+.opponent-panel {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    min-width: 280px;
+    flex-shrink: 0;
+}
+.opponent-panel.eliminated {
+    opacity: 0.4;
+    border-color: var(--accent);
+}
+
+.opponent-name {
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.opponent-name .eliminated-tag {
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+}
+
+.opponent-organs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 0.4rem;
+}
+
+/* My area */
+.my-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    overflow: hidden;
+    padding: 0.5rem 0;
+}
+
+.my-organs-section h3,
+.my-hand-section h3 {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+}
+
+.organs-grid {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.hand-grid {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    flex: 1;
+    align-items: flex-start;
+    align-content: flex-start;
+}
+
+/* Organ chip */
+.organ-chip {
+    width: 80px;
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 2px solid;
+    position: relative;
+    transition: all var(--transition);
+}
+.organ-chip.healthy {
+    background: rgba(46, 204, 113, 0.15);
+    border-color: var(--green);
+    color: var(--green);
+}
+.organ-chip.protected {
+    background: rgba(52, 152, 219, 0.15);
+    border-color: var(--blue);
+    color: var(--blue);
+}
+.organ-chip.removed {
+    background: rgba(231, 76, 60, 0.1);
+    border-color: #444;
+    color: #666;
+    text-decoration: line-through;
+}
+.organ-chip.vital::after {
+    content: "\2605";
+    position: absolute;
+    top: -6px;
+    right: -4px;
+    font-size: 0.7rem;
+    color: var(--yellow);
+}
+.organ-chip .protection-label {
+    display: block;
+    font-size: 0.6rem;
+    color: var(--blue);
+    margin-top: 2px;
+}
+
+/* Cards */
+.card {
+    width: 140px;
+    min-height: 180px;
+    border-radius: var(--radius);
+    padding: 0;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: all 0.25s ease;
+    overflow: hidden;
+    border: 2px solid transparent;
+}
+.card:hover {
+    transform: translateY(-8px);
+    z-index: 10;
+}
+.card.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.card-type-bar {
+    padding: 6px 10px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #fff;
+}
+.card-body {
+    background: var(--bg-card);
+    padding: 10px;
+    flex: 1;
+}
+.card-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--text-primary);
+}
+.card-desc {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+.card-target {
+    font-size: 0.65rem;
+    color: var(--blue);
+    margin-top: 6px;
+    font-weight: 600;
+}
+
+/* Card type colors */
+.card.attack .card-type-bar { background: var(--accent); }
+.card.attack { border-color: var(--accent); box-shadow: 0 2px 12px var(--accent-glow); }
+.card.defense .card-type-bar { background: var(--green); }
+.card.defense { border-color: var(--green); box-shadow: 0 2px 12px var(--green-glow); }
+.card.action .card-type-bar { background: var(--blue); }
+.card.action { border-color: var(--blue); box-shadow: 0 2px 12px var(--blue-glow); }
+.card.wildcard .card-type-bar { background: var(--purple); }
+.card.wildcard { border-color: var(--purple); box-shadow: 0 2px 12px var(--purple-glow); }
+
+/* Card play animation */
+@keyframes cardPlay {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1) translateY(-20px); opacity: 0.8; }
+    100% { transform: scale(0.5) translateY(-60px); opacity: 0; }
+}
+.card.playing {
+    animation: cardPlay 0.4s ease forwards;
+    pointer-events: none;
+}
+
+/* Game controls */
+.game-controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    padding: 0.75rem 0;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+/* Game message */
+.game-message {
+    text-align: center;
+    padding: 0.75rem;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    animation: fadeIn 0.3s ease;
+}
+.game-message.info { background: var(--blue-glow); color: var(--blue); border: 1px solid var(--blue); }
+.game-message.success { background: var(--green-glow); color: var(--green); border: 1px solid var(--green); }
+.game-message.error { background: var(--accent-glow); color: var(--accent); border: 1px solid var(--accent); }
+
+/* ============ TARGET MODAL ============ */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    backdrop-filter: blur(4px);
+}
+.modal.hidden { display: none; }
+
+.modal-content {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    animation: slideUp 0.3s ease;
+}
+
+.modal-content h3 { margin-bottom: 0.5rem; }
+.modal-content p { color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.9rem; }
+
+.modal-players {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.modal-player-btn {
+    padding: 12px 16px;
+    background: var(--bg-surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    cursor: pointer;
+    text-align: left;
+    font-size: 0.95rem;
+    transition: all var(--transition);
+}
+.modal-player-btn:hover { border-color: var(--blue); }
+.modal-player-btn.selected { border-color: var(--accent); background: var(--accent-glow); }
+.modal-player-btn strong { color: var(--text-primary); }
+.modal-player-btn span { font-size: 0.85rem; }
+
+.modal-organs h4 {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+}
+
+.organ-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+.organ-list .organ-chip { cursor: pointer; }
+.organ-list .organ-chip.selected { border-color: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}
+
+/* ============ TOAST ============ */
+.toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 24px;
+    font-weight: 600;
+    z-index: 200;
+    animation: slideUp 0.3s ease;
+    box-shadow: var(--shadow);
+}
+.toast.hidden { display: none; }
+
+/* Animations */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes slideDown { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* ============ RESPONSIVE / MOBILE ============ */
+
+/* Small phones (portrait) */
+@media (max-width: 480px) {
+    :root {
+        --radius: 10px;
+        --radius-sm: 6px;
+    }
+
+    /* Home */
+    .home-container { padding: 1.5rem 1rem; }
+    .logo h1 { font-size: 1.8rem; letter-spacing: 2px; }
+    .logo .tagline { font-size: 0.8rem; letter-spacing: 1px; }
+    .home-form { margin-top: 2rem; gap: 0.75rem; }
+    input[type="text"] { padding: 12px 14px; font-size: 0.95rem; }
+    .home-buttons { flex-direction: column; gap: 0.75rem; }
+    .home-buttons .btn { width: 100%; }
+    .join-form { flex-direction: column; gap: 0.5rem; }
+    .join-form .btn { width: 100%; }
+
+    /* Lobby */
+    .lobby-container { padding: 1.5rem 1rem; }
+    .lobby-container h2 { font-size: 1.5rem; margin-bottom: 1.5rem; }
+    .lobby-code-box { padding: 1rem; flex-wrap: wrap; }
+    .lobby-code { font-size: 2rem; letter-spacing: 6px; }
+    .lobby-actions { flex-direction: column; gap: 0.75rem; }
+    .lobby-actions .btn { width: 100%; }
+
+    /* Game header - stack on small screens */
+    .game-layout { padding: 0.25rem 0.5rem; }
+    .game-header {
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        padding: 0.4rem 0;
+    }
+    .game-info { gap: 0.4rem; flex-wrap: wrap; }
+    .turn-badge { padding: 4px 10px; font-size: 0.75rem; }
+    .phase-badge { padding: 4px 10px; font-size: 0.7rem; }
+    .deck-info { gap: 0.6rem; font-size: 0.75rem; }
+
+    /* Opponents - horizontal scroll cards */
+    .opponents-area {
+        gap: 0.6rem;
+        padding: 0.5rem 0;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+    }
+    .opponent-panel {
+        min-width: 220px;
+        padding: 0.75rem;
+        scroll-snap-align: start;
+    }
+    .opponent-name { font-size: 0.85rem; margin-bottom: 0.5rem; }
+    .opponent-organs { grid-template-columns: repeat(auto-fill, minmax(55px, 1fr)); gap: 0.3rem; }
+
+    /* My area */
+    .my-area { gap: 0.5rem; padding: 0.25rem 0; }
+    .my-organs-section h3,
+    .my-hand-section h3 { font-size: 0.75rem; margin-bottom: 0.3rem; }
+
+    /* Organ chips - smaller */
+    .organ-chip { width: 60px; padding: 5px; font-size: 0.65rem; }
+    .organ-chip.vital::after { font-size: 0.6rem; top: -4px; right: -3px; }
+    .organ-chip .protection-label { font-size: 0.5rem; }
+
+    /* Cards - smaller, touch-friendly */
+    .hand-grid {
+        gap: 0.5rem;
+        padding: 0.25rem 0 0.75rem;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+    }
+    .card {
+        width: 110px;
+        min-height: 145px;
+        scroll-snap-align: start;
+    }
+    .card:active:not(.disabled) { transform: scale(0.95); }
+    .card:hover { transform: none; } /* disable hover lift on touch */
+    .card-type-bar { padding: 4px 8px; font-size: 0.55rem; letter-spacing: 1px; }
+    .card-body { padding: 8px; }
+    .card-name { font-size: 0.8rem; margin-bottom: 4px; }
+    .card-desc { font-size: 0.65rem; line-height: 1.3; }
+    .card-target { font-size: 0.55rem; margin-top: 4px; }
+
+    /* Controls - full width stacked */
+    .game-controls {
+        gap: 0.5rem;
+        padding: 0.5rem 0;
+        padding-bottom: env(safe-area-inset-bottom, 0.5rem);
+    }
+    .game-controls .btn {
+        width: 100%;
+        padding: 12px 16px;
+        font-size: 0.9rem;
+    }
+
+    /* Game message */
+    .game-message { padding: 0.5rem; font-size: 0.8rem; }
+
+    /* Modals - full width on mobile */
+    .modal-content {
+        padding: 1.25rem;
+        width: 95%;
+        max-width: none;
+        margin: 0 0.5rem;
+    }
+    .modal-content h3 { font-size: 1.1rem; }
+    .modal-content p { font-size: 0.8rem; margin-bottom: 1rem; }
+    .modal-player-btn { padding: 10px 12px; font-size: 0.85rem; }
+    .modal-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .modal-actions .btn { width: 100%; text-align: center; }
+
+    /* Game over */
+    .game-over-content { padding: 1.5rem 1rem; }
+    .game-over-trophy { font-size: 3.5rem; }
+    .game-over-title { font-size: 1.6rem; letter-spacing: 2px; }
+    .game-over-message { font-size: 1.1rem; }
+    .game-over-subtitle { font-size: 0.85rem; margin-bottom: 1.5rem; }
+
+    /* Toast */
+    .toast {
+        bottom: 1rem;
+        left: 1rem;
+        right: 1rem;
+        transform: none;
+        text-align: center;
+        font-size: 0.85rem;
+        padding: 10px 16px;
+    }
+}
+
+/* Tablets and larger phones (landscape) */
+@media (min-width: 481px) and (max-width: 768px) {
+    .logo h1 { font-size: 2.2rem; }
+    .card { width: 125px; min-height: 160px; }
+    .organ-chip { width: 70px; }
+    .opponent-panel { min-width: 240px; }
+}
+
+/* General touch device improvements */
+@media (hover: none) and (pointer: coarse) {
+    .card:hover { transform: none; }
+    .card:active:not(.disabled) { transform: scale(0.96); }
+    .btn:hover:not(:disabled) { transform: none; }
+    .btn:active:not(:disabled) { transform: scale(0.97); }
+    .modal-player-btn:hover { border-color: var(--border); }
+    .modal-player-btn:active { border-color: var(--blue); }
+}
+
+/* Landscape phones */
+@media (max-height: 500px) and (orientation: landscape) {
+    .game-layout { padding: 0.25rem 0.5rem; }
+    .game-header { padding: 0.25rem 0; }
+    .my-area { gap: 0.25rem; }
+    .my-organs-section h3,
+    .my-hand-section h3 { margin-bottom: 0.2rem; }
+    .organ-chip { width: 50px; padding: 4px; font-size: 0.6rem; }
+    .card { width: 100px; min-height: 130px; }
+    .game-controls { padding: 0.25rem 0; gap: 0.4rem; }
+    .game-controls .btn { padding: 8px 12px; font-size: 0.8rem; }
+}
+
+/* Safe area support for notched phones */
+@supports (padding: env(safe-area-inset-bottom)) {
+    .game-controls {
+        padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+    }
+    .game-header {
+        padding-top: env(safe-area-inset-top, 0.5rem);
+    }
+}
+
+/* Dark mode scrollbar for webkit */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ============ GAME OVER ============ */
+.game-over-content {
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, #1a1a3e 50%, var(--bg-secondary) 100%);
+    border-color: var(--yellow);
+    box-shadow: 0 0 60px rgba(243, 156, 18, 0.3);
+}
+
+.game-over-inner {
+    position: relative;
+    z-index: 2;
+}
+
+.game-over-trophy {
+    font-size: 5rem;
+    animation: trophyBounce 1s ease infinite;
+    filter: drop-shadow(0 0 20px rgba(243, 156, 18, 0.5));
+}
+
+.game-over-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    letter-spacing: 4px;
+    margin: 1rem 0 0.5rem;
+    background: linear-gradient(90deg, var(--yellow), var(--orange), var(--yellow));
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 2s linear infinite;
+}
+
+.game-over-message {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.game-over-subtitle {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+@keyframes trophyBounce {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-10px) rotate(-5deg); }
+    75% { transform: translateY(-10px) rotate(5deg); }
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+}
+
+/* Confetti */
+#confetti-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    top: -10px;
+    opacity: 0;
+    animation: confettiFall linear forwards;
+}
+
+@keyframes confettiFall {
+    0% {
+        opacity: 1;
+        transform: translateY(0) rotate(0deg) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(500px) rotate(720deg) scale(0.5);
+    }
+}

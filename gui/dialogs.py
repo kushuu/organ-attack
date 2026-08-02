@@ -7,6 +7,198 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+class HostGameDialog:
+    """Dialog for hosting an online game."""
+
+    def __init__(self, parent, server_url: str = "ws://localhost:8765"):
+        self.parent = parent
+        self.server_url = server_url
+        self.result: Optional[dict] = None
+        self.width = 450
+        self.height = 280
+        self.dimensions = f"{self.width}x{self.height}"
+
+        self._create_dialog()
+
+    def _create_dialog(self):
+        """Create the host game dialog."""
+        self.dialog = tk.Toplevel(self.parent)
+        self.dialog.title("Host Online Game")
+        self.dialog.geometry(f"{self.dimensions}")
+        self.dialog.resizable(False, False)
+        self.dialog.transient(self.parent)
+        self.dialog.grab_set()
+
+        self.dialog.update_idletasks()
+        x = (self.dialog.winfo_screenwidth() // 2) - (self.width // 2)
+        y = (self.dialog.winfo_screenheight() // 2) - (self.height // 2)
+        self.dialog.geometry(f"{self.dimensions}+{x}+{y}")
+
+        main_frame = ttk.Frame(self.dialog)
+        main_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+
+        title_label = ttk.Label(main_frame, text="Host Online Game",
+                                font=('Arial', 16, 'bold'))
+        title_label.pack(pady=(0, 20))
+
+        name_label = ttk.Label(main_frame, text="Your Name:",
+                               font=('Arial', 11))
+        name_label.pack(anchor=tk.W)
+
+        self.name_entry = ttk.Entry(main_frame, font=('Arial', 11))
+        self.name_entry.pack(fill=tk.X, pady=(5, 20))
+
+        server_label = ttk.Label(main_frame, text="Server Address:",
+                                 font=('Arial', 11))
+        server_label.pack(anchor=tk.W)
+
+        self.server_entry = ttk.Entry(main_frame, font=('Arial', 11))
+        self.server_entry.insert(0, self.server_url)
+        self.server_entry.pack(fill=tk.X, pady=(5, 20))
+
+        button_frame = ttk.Frame(main_frame)
+        button_frame.pack(side=tk.BOTTOM)
+
+        host_button = ttk.Button(button_frame, text="Host Game",
+                                 command=self._host_clicked)
+        host_button.pack(side=tk.LEFT, padx=(0, 10))
+
+        cancel_button = ttk.Button(button_frame, text="Cancel",
+                                   command=self._cancel_clicked)
+        cancel_button.pack(side=tk.LEFT)
+
+        self.name_entry.focus()
+        self.dialog.bind('<Return>', lambda e: self._host_clicked())
+
+        self.dialog.wait_window()
+
+    def _host_clicked(self):
+        """Handle host button click."""
+        name = self.name_entry.get().strip()
+        if not name:
+            messagebox.showerror("Error", "Please enter your name!")
+            return
+
+        if len(name) > 20:
+            messagebox.showerror("Error", "Name must be 20 characters or less!")
+            return
+
+        self.result = {
+            "player_name": name,
+            "server_url": self.server_entry.get().strip()
+        }
+        self.dialog.destroy()
+
+    def _cancel_clicked(self):
+        """Handle cancel button click."""
+        self.dialog.destroy()
+
+
+class JoinGameDialog:
+    """Dialog for joining an online game."""
+
+    def __init__(self, parent, server_url: str = "ws://localhost:8765"):
+        self.parent = parent
+        self.server_url = server_url
+        self.result: Optional[dict] = None
+        self.width = 450
+        self.height = 320
+        self.dimensions = f"{self.width}x{self.height}"
+
+        self._create_dialog()
+
+    def _create_dialog(self):
+        """Create the join game dialog."""
+        self.dialog = tk.Toplevel(self.parent)
+        self.dialog.title("Join Online Game")
+        self.dialog.geometry(f"{self.dimensions}")
+        self.dialog.resizable(False, False)
+        self.dialog.transient(self.parent)
+        self.dialog.grab_set()
+
+        self.dialog.update_idletasks()
+        x = (self.dialog.winfo_screenwidth() // 2) - (self.width // 2)
+        y = (self.dialog.winfo_screenheight() // 2) - (self.height // 2)
+        self.dialog.geometry(f"{self.dimensions}+{x}+{y}")
+
+        main_frame = ttk.Frame(self.dialog)
+        main_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+
+        title_label = ttk.Label(main_frame, text="Join Online Game",
+                                font=('Arial', 16, 'bold'))
+        title_label.pack(pady=(0, 20))
+
+        name_label = ttk.Label(main_frame, text="Your Name:",
+                               font=('Arial', 11))
+        name_label.pack(anchor=tk.W)
+
+        self.name_entry = ttk.Entry(main_frame, font=('Arial', 11))
+        self.name_entry.pack(fill=tk.X, pady=(5, 15))
+
+        code_label = ttk.Label(main_frame, text="Game Code:",
+                               font=('Arial', 11))
+        code_label.pack(anchor=tk.W)
+
+        self.code_entry = ttk.Entry(main_frame, font=('Arial', 11))
+        self.code_entry.pack(fill=tk.X, pady=(5, 15))
+
+        server_label = ttk.Label(main_frame, text="Server Address:",
+                                 font=('Arial', 11))
+        server_label.pack(anchor=tk.W)
+
+        self.server_entry = ttk.Entry(main_frame, font=('Arial', 11))
+        self.server_entry.insert(0, self.server_url)
+        self.server_entry.pack(fill=tk.X, pady=(5, 20))
+
+        button_frame = ttk.Frame(main_frame)
+        button_frame.pack(side=tk.BOTTOM)
+
+        join_button = ttk.Button(button_frame, text="Join Game",
+                                 command=self._join_clicked)
+        join_button.pack(side=tk.LEFT, padx=(0, 10))
+
+        cancel_button = ttk.Button(button_frame, text="Cancel",
+                                   command=self._cancel_clicked)
+        cancel_button.pack(side=tk.LEFT)
+
+        self.name_entry.focus()
+        self.dialog.bind('<Return>', lambda e: self._join_clicked())
+
+        self.dialog.wait_window()
+
+    def _join_clicked(self):
+        """Handle join button click."""
+        name = self.name_entry.get().strip()
+        code = self.code_entry.get().strip().upper()
+
+        if not name:
+            messagebox.showerror("Error", "Please enter your name!")
+            return
+
+        if not code:
+            messagebox.showerror("Error", "Please enter the game code!")
+            return
+
+        if len(name) > 20:
+            messagebox.showerror("Error", "Name must be 20 characters or less!")
+            return
+
+        if len(code) != 6:
+            messagebox.showerror("Error", "Game code must be 6 characters!")
+            return
+
+        self.result = {
+            "player_name": name,
+            "code": code,
+            "server_url": self.server_entry.get().strip()
+        }
+        self.dialog.destroy()
+
+    def _cancel_clicked(self):
+        """Handle cancel button click."""
+        self.dialog.destroy()
+
+
 class NewGameDialog:
     """Dialog for setting up a new game."""
 

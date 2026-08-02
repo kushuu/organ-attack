@@ -54,7 +54,6 @@ class CardManager:
                 card = self._create_card_from_data(card_data)
                 self.all_cards[card.id] = card
 
-                # Categorize by type
                 card_type = CardType(card.type.value)
                 self.cards_by_type[card_type].append(card)
 
@@ -64,7 +63,6 @@ class CardManager:
 
     def _create_card_from_data(self, data: Dict[str, Any]) -> Card:
         """Create a Card object from JSON data."""
-        # Parse target information
         target = None
         if 'target' in data and data['target']:
             target_data = data['target']
@@ -76,7 +74,6 @@ class CardManager:
                 flexible=target_data.get('flexible', False)
             )
 
-        # Parse conditions
         conditions = None
         if 'conditions' in data and data['conditions']:
             cond_data = data['conditions']
@@ -93,7 +90,6 @@ class CardManager:
                     'must_be_played_in_response_or_attack_phase', False)
             )
 
-        # Parse effects
         effects = []
         for effect_data in data.get('effects', []):
             effect = CardEffect(
@@ -107,11 +103,9 @@ class CardManager:
             )
             effects.append(effect)
 
-        # Create card
         card_type = CardType(data['type'])
 
         if card_type == CardType.ORGAN:
-            # Special handling for organ cards
             return OrganCard(
                 id=data['id'],
                 name=data['name'],
@@ -142,7 +136,6 @@ class CardManager:
         """Create a basic set of cards if JSON loading fails."""
         logger.warning("Creating default card set")
 
-        # Create some basic attack cards
         basic_attacks = [
             {
                 'id': 'attack_001',
@@ -162,7 +155,6 @@ class CardManager:
             }
         ]
 
-        # Create some basic defense cards
         basic_defenses = [
             {
                 'id': 'defense_001',
@@ -173,7 +165,6 @@ class CardManager:
             }
         ]
 
-        # Parse default cards
         default_data = {'cards': basic_attacks + basic_defenses}
         self._parse_cards(default_data)
 
@@ -193,26 +184,37 @@ class CardManager:
                 non_organ_cards.extend(self.cards_by_type[card_type])
         return non_organ_cards
 
-    def validate_card_play(self, card: Card, game_state: Any) -> tuple[bool, str]:
-        """Validate if a card can be played in the current game state."""
-        try:
-            # Basic validation
-            if not card:
-                return False, "Invalid card"
+    def validate_card_play(self, card: Card, player: Player, game_engine=None) -> tuple[bool, str]:
+        """Validate if a card can be played based on its conditions."""
+        if not card:
+            return False, "Invalid card"
 
-            if not card.conditions:
-                return True, "Valid"
+        if card not in player.hand:
+            return False, "Card not in hand"
 
-            # Check specific conditions
-            conditions = card.conditions
-
-            # Add more validation logic based on game state
-            # This is a simplified version
+        if not card.conditions:
             return True, "Valid"
 
-        except Exception as e:
-            logger.error(f"Error validating card play: {e}")
-            return False, f"Validation error: {e}"
+        conditions = card.conditions
+
+        # Check: organ_must_be_present — player must have at least one non-removed organ
+        if conditions.organ_must_be_present:
+            available = player.get_available_organs()
+            if not available:
+                return False, "No organs present to use this card"
+
+        # Check: organ_must_not_be_protected — player must have an unprotected organ
+        if conditions.organ_must_not_be_protected:
+            unprotected = [o for o in player.get_available_organs() if not o.is_protected]
+            if not unprotected:
+                return False, "All organs are protected"
+
+        # Check: must_be_played_in_response_or_attack_phase — defense cards
+        if conditions.must_be_played_in_response_or_attack_phase:
+            if game_engine and not game_engine.pending_defense:
+                return False, "Can only be played in response to an attack"
+
+        return True, "Valid"
 
 
 class CardEffectProcessor:
@@ -255,6 +257,12 @@ class CardEffectProcessor:
             return self._skip_turn_effect(effect, target_player)
         elif action == 'test_luck':
             return self._test_luck_effect(effect, player, target_player, target_organ)
+        elif action == 'extra_turn':
+            return self._extra_turn_effect(effect, player)
+        elif action == 'mass_discard':
+            return self._mass_discard_effect(effect, player)
+        elif action == 'mimic_card':
+            return self._mimic_card_effect(effect, card, player, target_player, target_organ)
         else:
             logger.warning(f"Unknown effect action: {action}")
             return {'success': False, 'error': f'Unknown action: {action}'}
@@ -284,20 +292,31 @@ class CardEffectProcessor:
         if not organ_type:
             return {'success': False, 'error': 'No target organ specified'}
 
-        # Set protection_source to 'Vaccination' if the card is Vaccination
-        protection_source = 'Vaccination' if getattr(effect, 'action', '').lower() == 'protect_organ' and getattr(
-            card, 'name', '').lower() == 'vaccination' else f"Protected by {player.name}"
-        success = target.protect_organ(organ_type, protection_source)
+        protection_source = 'Vaccination' if card.name.lower() == 'vaccination' else f"Protected by {player.name}"
+
+        # Vaccination protection expires after 2 full rounds (num_players * 2 turns)
+        expires_at = None
+        if card.name.lower() == 'vaccination':
+            num_players = len(self.game_engine.players)
+            expires_at = self.game_engine.turn_count + (num_players * 2)
+
+        success = target.protect_organ(organ_type, protection_source, expires_at)
         return {
             'success': success,
             'action': 'protect_organ',
             'target': organ_type,
-            'player': target.name
+            'player': target.name,
+            'expires_at': expires_at
         }
 
     def _block_attack_effect(self, effect: CardEffect, player):
-        """Process attack blocking effect."""
-        # This would interact with the game engine's attack resolution
+        """Process attack blocking effect. Sets the pending defense flag."""
+        # Mark that this player has played a defense card
+        if self.game_engine.current_attack:
+            self.game_engine.current_attack['blocked'] = True
+            self.game_engine.current_attack['blocked_by'] = player.name
+        self.game_engine.pending_defense = False
+
         return {
             'success': True,
             'action': 'block_attack',
@@ -305,29 +324,57 @@ class CardEffectProcessor:
         }
 
     def _steal_organ_effect(self, effect: CardEffect, player, target_player, target_organ):
-        """Process organ stealing effect."""
+        """Process organ stealing effect. Removes organ from target, adds to player."""
         if not target_player or not target_organ:
             return {'success': False, 'error': 'Missing target for organ steal'}
 
-        # Implementation would depend on game rules for organ stealing
+        # Check if target has the organ
+        if not target_player.has_organ(target_organ):
+            return {'success': False, 'error': f'{target_player.name} does not have {target_organ}'}
+
+        # Check if organ is protected
+        if target_player.is_organ_protected(target_organ):
+            return {'success': False, 'blocked': True, 'reason': 'Organ is protected'}
+
+        # Check if player already has this organ
+        if player.has_organ(target_organ):
+            return {'success': False, 'error': f'You already have a {target_organ}'}
+
+        # Remove from target
+        target_organ_card = target_player.organs[target_organ]
+        target_player.remove_organ(target_organ)
+        # Delete the entry from target's dict so the shared reference is gone
+        del target_player.organs[target_organ]
+
+        # Add to player (reset flags for new owner)
+        target_organ_card.is_removed = False
+        target_organ_card.is_protected = False
+        target_organ_card.protection_source = None
+        player.organs[target_organ] = target_organ_card
+
         return {
-            'success': False,
-            'error': 'Organ stealing not fully implemented'
+            'success': True,
+            'action': 'steal_organ',
+            'target': target_organ,
+            'from_player': target_player.name,
+            'to_player': player.name
         }
 
     def _draw_cards_effect(self, effect: CardEffect, player):
         """Process card drawing effect."""
         draw_count = effect.value or 1
+        actual_count = 0
 
         for _ in range(draw_count):
             card = self.game_engine.draw_card_for_player(player)
             if not card:
                 break
+            actual_count += 1
 
         return {
             'success': True,
             'action': 'draw_cards',
-            'count': draw_count,
+            'count': actual_count,
             'player': player.name
         }
 
@@ -349,8 +396,82 @@ class CardEffectProcessor:
 
         result = {'success': True, 'action': 'test_luck', 'coin': coin}
         if coin == 'tails' and target_player and target_organ:
-            destroyed = target_player.remove_organ(target_organ)
-            result['organ_destroyed'] = destroyed
-            result['target_player'] = target_player.name
-            result['target_organ'] = target_organ
+            # Check protection before destroying
+            if target_player.is_organ_protected(target_organ):
+                result['organ_destroyed'] = False
+                result['reason'] = 'Organ is protected'
+            else:
+                destroyed = target_player.remove_organ(target_organ)
+                result['organ_destroyed'] = destroyed
+                result['target_player'] = target_player.name
+                result['target_organ'] = target_organ
         return result
+
+    def _extra_turn_effect(self, effect: CardEffect, player):
+        """Grant the player an extra turn after the current turn ends."""
+        # Mark the player to get an extra turn
+        player.can_draw_extra = True
+        return {
+            'success': True,
+            'action': 'extra_turn',
+            'player': player.name
+        }
+
+    def _mass_discard_effect(self, effect: CardEffect, player):
+        """All other players discard a random card from their hand."""
+        discarded = []
+        for other_player in self.game_engine.get_other_players(player):
+            if other_player.hand:
+                random_card = random.choice(other_player.hand)
+                other_player.remove_card_from_hand(random_card)
+                self.game_engine.discard_pile.append(random_card)
+                discarded.append({
+                    'player': other_player.name,
+                    'card': random_card.name
+                })
+
+        return {
+            'success': True,
+            'action': 'mass_discard',
+            'discarded': discarded,
+            'player': player.name
+        }
+
+    def _mimic_card_effect(self, effect: CardEffect, card: Card, player, target_player, target_organ):
+        """Mimic another card's effect. Uses the mimic_type from the card effect."""
+        if not effect.mimic_type:
+            return {'success': False, 'error': 'No mimic type specified'}
+
+        # Find a card of the specified type in the discard pile or create a virtual one
+        mimic_card = None
+        for discarded_card in self.game_engine.discard_pile:
+            if discarded_card.type.value.lower() == effect.mimic_type.lower():
+                mimic_card = discarded_card
+                break
+
+        if not mimic_card:
+            # Create a basic virtual card of the requested type
+            if effect.mimic_type.lower() == 'attack':
+                # Mimic a basic attack
+                return self._remove_organ_effect(
+                    CardEffect(action='remove_organ', target_organ=target_organ),
+                    player, target_player, target_organ
+                )
+            elif effect.mimic_type.lower() == 'defense':
+                return self._block_attack_effect(effect, player)
+            elif effect.mimic_type.lower() == 'action':
+                return self._draw_cards_effect(
+                    CardEffect(action='draw_cards', value=1), player
+                )
+            else:
+                return {'success': False, 'error': f'Cannot mimic {effect.mimic_type}'}
+
+        # Process the mimicked card's effects
+        results = self.process_card_effects(mimic_card, player, target_player, target_organ)
+        return {
+            'success': True,
+            'action': 'mimic_card',
+            'mimicked': mimic_card.name,
+            'effects': results,
+            'player': player.name
+        }

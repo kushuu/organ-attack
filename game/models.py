@@ -105,6 +105,7 @@ class OrganCard(Card):
     is_removed: bool = False
     is_protected: bool = False
     protection_source: Optional[str] = None
+    protection_expires_at: Optional[int] = None  # Turn number when protection expires (None = permanent or no protection)
 
     def __post_init__(self):
         """Set card type to Organ after initialization."""

@@ -31,20 +31,17 @@ class Player:
         OrganType.HEART, OrganType.BRAIN, OrganType.LIVER,
         OrganType.KIDNEYS, OrganType.LUNGS, OrganType.STOMACH
     )
+    _skip_init: bool = field(default=False, repr=False)
 
     def __post_init__(self):
         """Initialize player with starting organs."""
-        if not self.organs:
+        if not self._skip_init and not self.organs:
             self._initialize_organs()
 
     def _initialize_organs(self):
-        """Initialize player with the standard set of organ cards."""
-
-        organs = random.sample(self.organs_list, 6)
+        """Initialize player with 6 random organs."""
+        organs = random.sample(list(self.organs_list), 6)
         logger.info(f"{self.name} has the following organs: {organs}")
-        # remove the selected organs from the list
-        self.organs_list = [
-            organ for organ in self.organs_list if organ not in organs]
 
         for organ_type in organs:
             organ_card = OrganCard(
@@ -91,15 +88,16 @@ class Player:
             return True
         return False
 
-    def protect_organ(self, organ_type: str, protection_source: str = "Unknown") -> bool:
+    def protect_organ(self, organ_type: str, protection_source: str = "Unknown", expires_at: Optional[int] = None) -> bool:
         """Protect an organ from attacks."""
         if self.has_organ(organ_type):
             organ = self.organs[organ_type]
             if organ.can_be_protected:
                 organ.is_protected = True
                 organ.protection_source = protection_source
+                organ.protection_expires_at = expires_at
                 logger.info(
-                    f"{self.name}'s {organ_type} is now protected by {protection_source}")
+                    f"{self.name}'s {organ_type} is now protected by {protection_source} (expires turn {expires_at})")
                 return True
         return False
 
@@ -149,16 +147,12 @@ class Player:
         """Check if player needs to discard cards."""
         return len(self.hand) > hand_limit
 
-    def can_play_card(self, card: Card) -> bool:
-        """Check if a card can be played based on game rules."""
+    def can_play_card(self, card: Card, allow_play: bool = True) -> bool:
+        """Check if a card can be played. allow_play=False when checking discard-only."""
         if card not in self.hand:
             return False
-
-        # Basic validation - more complex validation happens in game engine
-        if card.type == CardType.DEFENSE:
-            # Defense cards are usually played in response to attacks
-            return True
-
+        if allow_play and self.cards_played_this_turn >= 2:
+            return False
         return True
 
     def get_playable_cards(self) -> List[Card]:
@@ -199,3 +193,119 @@ class Player:
         """String representation of the player."""
         available_organs = len(self.get_available_organs())
         return f"{self.name} ({available_organs} organs, {len(self.hand)} cards)"
+
+    def to_dict(self) -> dict:
+        """Convert player to dictionary for network transmission."""
+        hand_data = []
+        for card in self.hand:
+            try:
+                card_dict = {
+                    "id": card.id,
+                    "name": card.name,
+                    "type": card.type.value if card.type else "Unknown",
+                    "description": card.description or "",
+                    "organ_type": card.organ_type,
+                    "target": None,
+                    "effects": []
+                }
+                if card.target:
+                    card_dict["target"] = {
+                        "organ_type": getattr(card.target, 'organ_type', None),
+                        "scope": getattr(card.target, 'scope', 'Single'),
+                        "player_scope": getattr(card.target, 'player_scope', 'Other'),
+                        "organ_scope": getattr(card.target, 'organ_scope', 'Single'),
+                        "flexible": getattr(card.target, 'flexible', False)
+                    }
+                if card.effects:
+                    for e in card.effects:
+                        try:
+                            card_dict["effects"].append({
+                                "action": e.action,
+                                "target_organ": e.target_organ,
+                                "duration": e.duration,
+                                "value": e.value
+                            })
+                        except Exception:
+                            pass
+                hand_data.append(card_dict)
+            except Exception as ex:
+                logger.error(f"Error serializing card {getattr(card, 'id', '?')}: {ex}")
+                hand_data.append({
+                    "id": getattr(card, 'id', 'unknown'),
+                    "name": getattr(card, 'name', 'Unknown'),
+                    "type": "Unknown",
+                    "description": "",
+                    "organ_type": None,
+                    "target": None,
+                    "effects": []
+                })
+
+        organs_data = {}
+        for organ_type, organ in self.organs.items():
+            try:
+                organs_data[organ_type] = {
+                    "id": organ.id,
+                    "name": organ.name,
+                    "organ_type": organ.organ_type,
+                    "is_removed": organ.is_removed,
+                    "is_protected": organ.is_protected,
+                    "protection_source": organ.protection_source,
+                    "protection_expires_at": organ.protection_expires_at,
+                    "is_vital": organ.is_vital
+                }
+            except Exception as ex:
+                logger.error(f"Error serializing organ {organ_type}: {ex}")
+
+        return {
+            "name": self.name,
+            "organs": organs_data,
+            "hand": hand_data,
+            "status": self.status.value,
+            "cards_played_this_turn": self.cards_played_this_turn,
+            "cards_drawn_this_turn": self.cards_drawn_this_turn,
+            "can_draw_extra": self.can_draw_extra,
+            "skip_next_turn": self.skip_next_turn
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "Player":
+        """Create player from dictionary without generating random organs."""
+        from game.models import CardType, Card, OrganCard
+
+        player = cls(name=data["name"], _skip_init=True)
+        player.status = PlayerStatus(data.get("status", "active"))
+        player.cards_played_this_turn = data.get("cards_played_this_turn", 0)
+        player.cards_drawn_this_turn = data.get("cards_drawn_this_turn", 0)
+        player.can_draw_extra = data.get("can_draw_extra", False)
+        player.skip_next_turn = data.get("skip_next_turn", False)
+
+        # Restore organs from dict
+        player.organs = {}
+        for organ_type, org_data in data.get("organs", {}).items():
+            organ = OrganCard(
+                id=org_data["id"],
+                name=org_data["name"],
+                type=CardType.ORGAN,
+                description="",
+                organ_type=org_data["organ_type"],
+                is_vital=org_data.get("is_vital", False),
+                can_be_protected=True,
+                is_removed=org_data.get("is_removed", False),
+                is_protected=org_data.get("is_protected", False),
+                protection_source=org_data.get("protection_source"),
+                protection_expires_at=org_data.get("protection_expires_at")
+            )
+            player.organs[organ_type] = organ
+
+        # Restore hand
+        player.hand = []
+        for card_data in data.get("hand", []):
+            card = Card(
+                id=card_data["id"],
+                name=card_data["name"],
+                type=CardType(card_data["type"]),
+                description=card_data.get("description", "")
+            )
+            player.hand.append(card)
+
+        return player

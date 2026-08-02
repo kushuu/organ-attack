@@ -1,7 +1,9 @@
 [project]
 name = "organ-attack"
 version = "0.1.0"
-description = "Add your description here"
+description = "A multiplayer card game where players attack opponents' organs and defend their own"
 readme = "README.md"
-requires-python = ">=3.13"
-dependencies = []
+requires-python = ">=3.10"
+dependencies = [
+    "websockets>=11.0.0",
+]
