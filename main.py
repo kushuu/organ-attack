@@ -1,5 +1,6 @@
 import argparse
 import asyncio
+import os
 import threading
 from server.server import run_server
 
@@ -17,7 +18,8 @@ def run_server_thread(host: str, port: int):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Organ Attack - Card Game")
     parser.add_argument("--host", action="store_true", help="Start as game server")
-    parser.add_argument("--port", type=int, default=8765, help="WebSocket server port (default: 8765)")
+    parser.add_argument("--port", type=int, default=int(os.environ.get("PORT", 8765)),
+                        help="WebSocket server port (default: 8765 or $PORT)")
     parser.add_argument("--server-host", default="0.0.0.0", help="Server bind address (default: 0.0.0.0)")
     parser.add_argument("--web", action="store_true", help="Also start web frontend server (port 8080)")
     parser.add_argument("--web-port", type=int, default=8080, help="Web frontend port (default: 8080)")
