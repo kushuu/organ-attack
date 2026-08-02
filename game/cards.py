@@ -232,7 +232,10 @@ class CardEffectProcessor:
                 result = self._process_single_effect(
                     effect, card, player, target_player, target_organ
                 )
-                results.append(result)
+                if isinstance(result, list):
+                    results.extend(result)
+                else:
+                    results.append(result)
             except Exception as e:
                 logger.error(f"Error processing effect {effect.action}: {e}")
                 results.append({'success': False, 'error': str(e)})
@@ -252,7 +255,7 @@ class CardEffectProcessor:
         elif action == 'steal_organ':
             return self._steal_organ_effect(effect, player, target_player, target_organ)
         elif action == 'draw_cards':
-            return self._draw_cards_effect(effect, player)
+            return self._draw_cards_effect(effect, player, card)
         elif action == 'skip_turn':
             return self._skip_turn_effect(effect, target_player)
         elif action == 'test_luck':
@@ -360,23 +363,44 @@ class CardEffectProcessor:
             'to_player': player.name
         }
 
-    def _draw_cards_effect(self, effect: CardEffect, player):
-        """Process card drawing effect."""
+    def _draw_cards_effect(self, effect: CardEffect, player, card=None):
+        """Process card drawing effect. If card target scope is 'All', all players draw."""
         draw_count = effect.value or 1
-        actual_count = 0
+        results = []
 
-        for _ in range(draw_count):
-            card = self.game_engine.draw_card_for_player(player)
-            if not card:
-                break
-            actual_count += 1
+        scope = card.target.player_scope if card and card.target else 'Self'
 
-        return {
-            'success': True,
-            'action': 'draw_cards',
-            'count': actual_count,
-            'player': player.name
-        }
+        if scope == 'All':
+            for p in self.game_engine.players:
+                if p.status == 'eliminated':
+                    continue
+                actual_count = 0
+                for _ in range(draw_count):
+                    drawn = self.game_engine.draw_card_for_player(p)
+                    if not drawn:
+                        break
+                    actual_count += 1
+                results.append({
+                    'success': True,
+                    'action': 'draw_cards',
+                    'count': actual_count,
+                    'player': p.name
+                })
+        else:
+            actual_count = 0
+            for _ in range(draw_count):
+                card_drawn = self.game_engine.draw_card_for_player(player)
+                if not card_drawn:
+                    break
+                actual_count += 1
+            results.append({
+                'success': True,
+                'action': 'draw_cards',
+                'count': actual_count,
+                'player': player.name
+            })
+
+        return results
 
     def _skip_turn_effect(self, effect: CardEffect, target_player):
         """Process turn skipping effect."""
