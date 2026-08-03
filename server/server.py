@@ -417,8 +417,10 @@ class GameServer:
         if not card:
             return {"success": False, "error": "Card not in hand"}
 
-        # Remove card from hand
-        player.remove_card_from_hand(card)
+        # Validate card conditions
+        valid, reason = engine.card_manager.validate_card_play(card, player, engine)
+        if not valid:
+            return {"success": False, "error": reason}
 
         # Find target player in engine
         target_engine_player = None
@@ -427,6 +429,23 @@ class GameServer:
                 if p.name == target_player_name:
                     target_engine_player = p
                     break
+
+        # Validate target_organ_must_be_present condition
+        if card.conditions and card.conditions.target_organ_must_be_present:
+            if target_engine_player and target_organ:
+                if not target_engine_player.has_organ(target_organ):
+                    return {"success": False, "error": f"{target_engine_player.name} does not have {target_organ}"}
+
+        # Validate target organ is not protected for attacks
+        if target_engine_player and target_organ:
+            if card.conditions and not card.conditions.organ_must_not_be_protected:
+                pass  # Protection is checked in the effect processor
+            if card.conditions and card.conditions.organ_must_not_be_protected:
+                if target_engine_player.is_organ_protected(target_organ):
+                    return {"success": False, "error": f"{target_organ} is protected"}
+
+        # Remove card from hand
+        player.remove_card_from_hand(card)
 
         # Process card effects
         results = engine.effect_processor.process_card_effects(
@@ -502,6 +521,25 @@ class GameServer:
                             organ.protection_source = None
                             organ.protection_expires_at = None
 
+        # Check if current player has an extra turn (Caffeine Rush)
+        current_player = engine.get_current_player()
+        if current_player.can_draw_extra:
+            # Grant extra turn: replenish hand, reset counters, stay on same player
+            current_player.can_draw_extra = False
+            while len(current_player.hand) < 5:
+                card = engine.draw_card_for_player(current_player)
+                if not card:
+                    break
+            current_player.reset_turn_counters()
+            engine.turn_count += 1
+            return {
+                "success": True,
+                "game_over": False,
+                "extra_turn": True,
+                "current_player": current_player.name,
+                "hand_size": len(current_player.hand)
+            }
+
         # Check for game end
         active_players = engine.get_active_players()
         if len(active_players) <= 1:
@@ -513,13 +551,17 @@ class GameServer:
                 "winner": winner.name if winner else None
             }
 
-        # Advance to next non-eliminated player
+        # Advance to next non-eliminated player, skipping those with skip_next_turn
         num_players = len(engine.players)
         for _ in range(num_players):
             engine.current_player_index = (engine.current_player_index + 1) % num_players
             next_player = engine.get_current_player()
-            if not next_player.is_eliminated():
-                break
+            if next_player.is_eliminated():
+                continue
+            if next_player.skip_next_turn:
+                next_player.skip_next_turn = False
+                continue
+            break
 
         # Replenish hand to 5 cards for the new current player
         current_player = engine.get_current_player()

@@ -77,6 +77,7 @@ export class TargetSelector {
                     this._confirm();
                     return;
                 }
+                this.okBtn.disabled = false;
                 this._show();
                 return;
             }
@@ -112,7 +113,7 @@ export class TargetSelector {
                     this.selectedPlayer = p;
                     this.okBtn.disabled = false;
 
-                    if (target.organ_type === 'Any') {
+                    if (target.organ_type === 'Any' || (!target.organ_type && target.organ_scope === 'Single')) {
                         this._updateOrgans(p);
                     }
                 });

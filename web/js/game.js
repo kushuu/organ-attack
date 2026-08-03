@@ -146,6 +146,13 @@ export class GameBoard {
         if (organ.is_removed) statusClass = 'removed';
         else if (organ.is_protected) statusClass = 'protected';
 
+        const maxHp = organ.max_hit_points || 1;
+        const hp = organ.hit_points ?? maxHp;
+        if (!organ.is_removed && maxHp > 1) {
+            if (hp <= 1) statusClass = 'critical';
+            else if (hp < maxHp) statusClass = 'damaged';
+        }
+
         chip.className = `organ-chip ${statusClass}`;
         if (organ.is_vital) chip.classList.add('vital');
 
@@ -158,8 +165,15 @@ export class GameBoard {
             }
         }
 
+        let hpHtml = '';
+        if (maxHp > 1 && !organ.is_removed) {
+            const pct = Math.round((hp / maxHp) * 100);
+            hpHtml = `<div class="organ-hp"><div class="organ-hp-bar" style="width:${pct}%"></div><span class="organ-hp-text">${hp}/${maxHp}</span></div>`;
+        }
+
         chip.innerHTML = `
             <div>${organ.organ_type || organ.name || '?'}</div>
+            ${hpHtml}
             ${protectionLabel}
         `;
         return chip;

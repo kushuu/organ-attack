@@ -114,9 +114,38 @@ class App {
         this.ws.on('game_state_update', (data) => {
             this._handleGameState(data.game_state);
             if (data.result) {
-                const msg = data.result.success ?
+                let msg = data.result.success ?
                     (data.result.card_played ? `Played ${data.result.card_played}` : 'Action completed') :
                     (data.result.error || 'Action failed');
+                if (data.result.extra_turn) {
+                    msg = `${data.result.current_player} gets an extra turn!`;
+                }
+                // Build effect messages
+                if (data.result.effects && data.result.effects.length > 0) {
+                    const effectMsgs = data.result.effects.map(e => {
+                        if (e.action === 'test_luck') {
+                            if (e.coin === 'heads') return 'Coin: Heads — nothing happened!';
+                            if (e.organ_destroyed) return `Coin: Tails — ${e.target_organ} destroyed on ${e.target_player}!`;
+                            if (e.reason) return `Coin: Tails — ${e.reason}`;
+                            return 'Coin: Tails — nothing happened!';
+                        }
+                        if (e.action === 'remove_organ') {
+                            if (e.destroyed) return `${e.target} destroyed on ${e.player}!`;
+                            return `${e.target} damaged on ${e.player}!`;
+                        }
+                        if (e.action === 'draw_cards') return `${e.player} drew ${e.count} card(s)`;
+                        if (e.action === 'steal_organ') return `${e.to_player} stole ${e.target} from ${e.from_player}!`;
+                        if (e.action === 'skip_turn') return `${e.player} skips their next turn!`;
+                        if (e.action === 'protect_organ') return `${e.target} protected for ${e.player}${e.expires_at ? ` (expires turn ${e.expires_at})` : ''}`;
+                        if (e.action === 'mass_discard') {
+                            if (e.discarded.length === 0) return 'No cards discarded';
+                            return e.discarded.map(d => `${d.player} discarded ${d.card}`).join(', ');
+                        }
+                        if (e.action === 'mimic_card') return `Mimicked ${e.mimicked}`;
+                        return null;
+                    }).filter(Boolean);
+                    if (effectMsgs.length > 0) msg += ' — ' + effectMsgs.join('; ');
+                }
                 this.gameBoard.showMessage(msg, data.result.success ? 'success' : 'error');
             }
         });

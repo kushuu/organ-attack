@@ -8,7 +8,9 @@
    screen and as an ambient pulse behind live turn info.
    ============================================ */
 
-.hidden { display: none !important; }
+.hidden {
+    display: none !important;
+}
 
 @import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap");
 
@@ -604,9 +606,11 @@ input[type="text"]::placeholder {
 
 .organs-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(86px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(86px, 1fr));
     gap: 0.5rem;
     justify-content: center;
+    max-width: 640px;
+    margin: 0 auto;
 }
 
 .my-hand-section {
@@ -649,8 +653,10 @@ input[type="text"]::placeholder {
     overflow-wrap: break-word;
     word-break: break-word;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 4px;
     min-height: 2.6em;
     box-sizing: border-box;
 }
@@ -685,6 +691,41 @@ input[type="text"]::placeholder {
     font-size: 0.6rem;
     color: var(--blue);
     margin-top: 2px;
+}
+
+.organ-hp {
+    position: relative;
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+    margin-top: auto;
+    overflow: hidden;
+}
+
+.organ-hp-bar {
+    height: 100%;
+    background: var(--green);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.organ-chip.damaged .organ-hp-bar {
+    background: var(--yellow);
+}
+
+.organ-chip.critical .organ-hp-bar {
+    background: var(--accent);
+}
+
+.organ-hp-text {
+    position: absolute;
+    top: -1px;
+    right: 0;
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 8px;
 }
 
 /* Cards — styled like a patient chart card */
@@ -1160,6 +1201,7 @@ input[type="text"]::placeholder {
     .opponent-organs {
         display: flex;
         flex-wrap: wrap;
+        justify-content: center;
         gap: 0.3rem;
     }
     .organ-chip {

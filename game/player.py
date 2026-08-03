@@ -39,19 +39,39 @@ class Player:
             self._initialize_organs()
 
     def _initialize_organs(self):
-        """Initialize player with 6 random organs."""
+        """Initialize player with 6 random organs, loading HP from cards.json."""
+        import json
+        from pathlib import Path
+
+        # Load organ definitions from JSON to get hit_points
+        organ_defs = {}
+        try:
+            cards_path = Path("data/cards.json")
+            if cards_path.exists():
+                with open(cards_path, 'r') as f:
+                    cards_data = json.load(f)
+                for card in cards_data.get('cards', []):
+                    if card.get('type') == 'Organ':
+                        organ_defs[card['organ_type']] = card
+        except Exception:
+            pass
+
         organs = random.sample(list(self.organs_list), 6)
         logger.info(f"{self.name} has the following organs: {organs}")
 
         for organ_type in organs:
+            organ_data = organ_defs.get(organ_type.value, {})
+            hp = organ_data.get('hit_points', 1)
             organ_card = OrganCard(
                 id=f"organ_{organ_type.value.lower()}",
                 name=organ_type.value,
                 type=CardType.ORGAN,
-                description=f"Essential {organ_type.value.lower()} organ.",
+                description=organ_data.get('description', f"Essential {organ_type.value.lower()} organ."),
                 organ_type=organ_type.value,
                 is_vital=organ_type in self.vital_organs_list,
-                can_be_protected=True
+                can_be_protected=True,
+                hit_points=hp,
+                max_hit_points=hp
             )
             self.organs[organ_type.value] = organ_card
 
@@ -80,10 +100,26 @@ class Player:
         return None
 
     def remove_organ(self, organ_type: str) -> bool:
-        """Remove (destroy) an organ."""
+        """Remove (destroy) an organ instantly, bypassing HP."""
         if self.has_organ(organ_type):
             self.organs[organ_type].is_removed = True
             logger.info(f"{self.name}'s {organ_type} was removed!")
+            self._check_elimination()
+            return True
+        return False
+
+    def damage_organ(self, organ_type: str) -> bool:
+        """Deal 1 damage to an organ. Returns True if organ was destroyed."""
+        if not self.has_organ(organ_type):
+            return False
+
+        organ = self.organs[organ_type]
+        organ.hit_points -= 1
+        logger.info(f"{self.name}'s {organ_type} took 1 damage ({organ.hit_points}/{organ.max_hit_points})")
+
+        if organ.hit_points <= 0:
+            organ.is_removed = True
+            logger.info(f"{self.name}'s {organ_type} was destroyed!")
             self._check_elimination()
             return True
         return False
@@ -251,7 +287,9 @@ class Player:
                     "is_protected": organ.is_protected,
                     "protection_source": organ.protection_source,
                     "protection_expires_at": organ.protection_expires_at,
-                    "is_vital": organ.is_vital
+                    "is_vital": organ.is_vital,
+                    "hit_points": organ.hit_points,
+                    "max_hit_points": organ.max_hit_points
                 }
             except Exception as ex:
                 logger.error(f"Error serializing organ {organ_type}: {ex}")
@@ -293,7 +331,9 @@ class Player:
                 is_removed=org_data.get("is_removed", False),
                 is_protected=org_data.get("is_protected", False),
                 protection_source=org_data.get("protection_source"),
-                protection_expires_at=org_data.get("protection_expires_at")
+                protection_expires_at=org_data.get("protection_expires_at"),
+                hit_points=org_data.get("hit_points", 1),
+                max_hit_points=org_data.get("max_hit_points", 1)
             )
             player.organs[organ_type] = organ
 
